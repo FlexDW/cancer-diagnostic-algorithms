@@ -37,6 +37,8 @@ setIndex[setIndex & ctrlIndex] <- rev(!duplicated(rev(PID[setIndex & ctrlIndex])
 setIndex[setIndex & !ctrlIndex] <- rev(!duplicated(rev(PID[setIndex & !ctrlIndex])))
 isoDat <- isoDat[, setIndex]
 mirDat <- mirDat[, setIndex]
+isoRaw <- isoRaw[, setIndex]
+mirRaw <- mirRaw[, setIndex]
 barcodes <- barcodes[setIndex]
 PID <- PID[setIndex]
 ctrlIndex <- ctrlIndex[setIndex]
