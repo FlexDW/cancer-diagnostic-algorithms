@@ -49,3 +49,7 @@ plot(isoPC12, cex.main=0.8, cex.lab=0.7,
      main="Full set of IsomiRs")
 legend("topright", legend=c("Tumor", "Healthy"), 
        pch=20, col=c("red", "black"), cex=0.7)
+
+# transpose back so that columns=patients
+isoDat <- t(isoDat)
+mirDat <- t(mirDat)
