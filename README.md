@@ -1,2 +1,2 @@
-# cancer-diagnostic-algorithms
+# Cancer diagnostic algorithms
 Thesis project
