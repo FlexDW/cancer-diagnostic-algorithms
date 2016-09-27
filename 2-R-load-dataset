@@ -50,10 +50,12 @@ mirDat <- mirDat[mirIndex, ]
 mirs <- mirs[mirIndex]
 
 # normalize
-isoRelLibSize <- colSums(isoDat)/exp(mean(log(colSums(isoDat))))
+isoLibSize <- colSums(isoDat)
+isoRelLibSize <- isoLibSize/exp(mean(log(isoLibSize)))
 isoNF <- edgeR::calcNormFactors(isoDat)*isoRelLibSize 
 isoDat <- round(sweep(isoDat, 2, isoNF, "/"))
-mirRelLibSize <- colSums(mirDat)/exp(mean(log(colSums(mirDat))))
+mirLibSize <- colSums(mirDat)
+mirRelLibSize <- mirLibSize/exp(mean(log(mirLibSize)))
 mirNF <- edgeR::calcNormFactors(mirDat)*mirRelLibSize
 mirDat <- round(sweep(mirDat, 2, mirNF, "/"))
 
