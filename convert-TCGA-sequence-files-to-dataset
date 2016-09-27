@@ -81,7 +81,8 @@ n_patients = len(barcodes)
 isoDat = sparse.csc_matrix((counts, (isomiR_index, patient_index)), shape=(n_isomirs, n_patients))
 
 # writes files separately so that different datasets can be loaded as needed but the
-# column dimensions are preserved so that they can be row-merged easily for multi-set analysis.
+# column dimensions are preserved so that they can be column-merged easily for multi-set analysis.
+# NOTE: saves files transposed for viewing in Excel (patients as columns and features as rows).
 for i in xrange(len(datasets)):
     col_index = [index for (index, value) in enumerate(tumor_type) if datasets[i] == value]
     isoDat_write = pd.DataFrame(isoDat[:, col_index].todense())
