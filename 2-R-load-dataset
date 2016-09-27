@@ -7,7 +7,7 @@
 # load files (include more if multiple to be loaded) 
 # assumes file loaded still transposed (i.e. features as rows and samples as columns)
 fname <- paste(dataPath, "/", datalabel, "_counts_transp.txt", sep="") 
-isoDat <- read.table(fname, header=TRUE, row.names=1)
+isoDat <- isoRaw <- read.table(fname, header=TRUE, row.names=1)
 mirLookup <- read.table(paste(dataPath, "mirLookup.txt", sep="/"), stringsAsFactors=F, header=T)
 
 # obtain labels from data set
@@ -19,7 +19,7 @@ idx <- match(isomirs, mirLookup$isoform_coords)
 mirs <- mirLookup$miRNA_ID[idx]
 if(any(is.na(idx))){ print(paste("Missing isomiR:", which(is.na(idx)))) }
 splitIsoDat <- split(isoDat, mirs)
-mirDat <- t(sapply(splitIsoDat, colSums))
+mirDat <- mirRaw <- t(sapply(splitIsoDat, colSums))
 mirs <- rownames(mirDat)
 
 # extract patientID and control group flag from barcodes
