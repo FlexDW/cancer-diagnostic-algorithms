@@ -93,3 +93,16 @@ for i in xrange(len(datasets)):
 
 # save mirLookup file for converting isoform counts to miRNA counts
 mirLookup.to_csv(os.path.join(save_path, "mirLookup.txt"), sep='\t', index=False)
+
+# some manual work needs to be done to separate columns in mirLookup. 
+# Final columns should look like this:
+# miRNA_ID | isoform_coords | chromosome | start | finish | length | dir | region | mature
+# miRNA_ID: leave as found
+# isoform_coords: leave as found
+# chromosome: the first number in the sequence after hg19:
+# start: starting point on sequence after the chromosome
+# finish: finish point on sequence
+# length: finish - start
+# dir: the final symbol in sequence (+/-)
+# region: first part of region/mature column in original file
+# mature: second part of region/mature column in original file
