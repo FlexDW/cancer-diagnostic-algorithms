@@ -34,7 +34,7 @@ mirPC12 <- t(t(mirPC12)*c(1,-1)) # flipping axis purely for aesthetics
 plot(mirPC12, cex.main=0.8, cex.lab=0.7,
      xlab=paste("PC1 (VAF=", mirVAF1, ")", sep=""), 
      ylab=paste("PC2 (VAF=", mirVAF2, ")", sep=""), 
-     col=(!ctrlIndex+1), # red=tumor, black=healthy
+     col=(as.numeric(!ctrlIndex)+1), # red=tumor, black=healthy
      pch=20,
      main="Archetype miRNAs")
 legend("topright", legend=c("Tumor", "Healthy"), 
@@ -44,7 +44,7 @@ isoPC12 <- t(t(isoPC12)*c(1,-1)) # flipping axis purely for aesthetics
 plot(isoPC12, cex.main=0.8, cex.lab=0.7,
      xlab=paste("PC1 (VAF=", isoVAF1, ")", sep=""), 
      ylab=paste("PC2 (VAF=", isoVAF2, ")", sep=""), 
-     col=(!ctrlIndex+1), # red=tumor, black=healthy
+     col=(as.numeric(!ctrlIndex)+1), # red=tumor, black=healthy
      pch=20,
      main="Full set of IsomiRs")
 legend("topright", legend=c("Tumor", "Healthy"), 
