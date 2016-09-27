@@ -6,7 +6,7 @@
 
 # load files (include more if multiple to be loaded) 
 # assumes file loaded still transposed (i.e. features as rows and samples as columns)
-fname <- paste(dataPath, "/", datalabel, _counts_transp.txt, sep="") 
+fname <- paste(dataPath, "/", datalabel, "_counts_transp.txt", sep="") 
 isoDat <- read.table(fname, header=TRUE, row.names=1)
 mirLookup <- read.table(paste(dataPath, "mirLookup.txt", sep="/"), stringsAsFactors=F, header=T)
 
