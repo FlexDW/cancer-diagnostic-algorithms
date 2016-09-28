@@ -46,9 +46,11 @@ ctrlIndex <- ctrlIndex[setIndex]
 # Select subset of data s.t. non-zero samples > 10% (unlikely to be important if less)
 isomirIndex <- apply(isoDat, 1, function(x) mean(x > 0)) > 0.1
 isoDat <- isoDat[isomirIndex, ]
+isoRaw <- isoRaw[isomirIndex, ]
 isomirs <- isomirs[isomirIndex]
 mirIndex <- apply(mirDat, 1, function(x) mean(x > 0)) > 0.1
 mirDat <- mirDat[mirIndex, ]
+mirRaw <- mirRaw[mirIndex, ]
 mirs <- mirs[mirIndex]
 
 # normalize
