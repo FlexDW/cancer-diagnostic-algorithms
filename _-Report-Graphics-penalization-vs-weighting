@@ -1,5 +1,6 @@
 require(glmnet)
 require(MASS)
+require(car)
 
 mu1 <- c(2, 4)
 mu2 <- c(5, 2)
