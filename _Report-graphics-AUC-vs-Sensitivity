@@ -62,7 +62,7 @@ ROCplot <- plot(main="ROC Curve Comparison",
 points(ROC3, type='l', col="magenta")
 abline(v=0.1, lty=3)
 legend("bottomright", 
-       legend=2:3, 
+       legend=1:2, 
        col=c("blue", "magenta"), 
        lty=1, cex=0.7, title="Scenario:")
 dev.off()
