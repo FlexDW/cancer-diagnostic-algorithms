@@ -1,0 +1,50 @@
+require(glmnet)
+require(MASS)
+
+mu1 <- c(2, 4)
+mu2 <- c(5, 2)
+SIG1 <- matrix(c(1, -0.5, -0.5, 2), 2)
+SIG2 <- matrix(c(3, -0.1, -0.1, 0.5), 2)
+N <- c(50, 200)
+set.seed(28920)
+X <- rbind(mvrnorm(N[1], mu=mu1, Sigma=SIG1), mvrnorm(N[2], mu=mu2, Sigma=SIG2))
+Y <- c(rep(0, N[1]), rep(1, N[2]))
+
+par(mfrow=c(1, 3))
+plot(X, pch=Y*2+1, col=Y+1, cex=0.5, cex.main=0.9, asp=1, 
+     main="Simulated Data with unequal COV", xlab="x1", ylab="x2", xaxt='n', yaxt='n')
+rad <- cumsum(rep(0.5, 4))
+for(r in rad){
+  ellipse(center=mu1, shape=SIG1, col=1, lwd=1, radius=r)
+  ellipse(center=mu2, shape=SIG2, col=2, lwd=1, radius=r)
+}
+legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
+
+lambdas <- seq(0, 0.2, length=5)
+plot(X, pch=Y*2+1, col=Y+1, cex=0.5, cex.main=0.9, asp=1, 
+     main="Penalization - shifting towards the mean", xlab="x1", ylab="x2", xaxt='n', yaxt='n')
+intercept <- mean(Y)
+glmo1 <- glmnet(y=Y, x=X, lambda=lambdas, alpha=0, offset=rep(intercept, length(Y)), intercept=F, family="binomial")
+line <- as.matrix(rbind(intercept, coef(glmo1)[2:3,]))
+line <- sweep(line[1:2, ], MARGIN=2, -line[3,], FUN="/")
+for(i in 1:length(lambdas)){ 
+  abline(line[, i], col="purple", lty=2, lwd=if(lambdas[i]==0) 2 else 1) 
+}
+legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
+
+plot(X, pch=Y*2+1, col=Y+1, cex=0.5, cex.main=0.9, asp=1, 
+     main="Weighting - shifting and rotating", xlab="x1", ylab="x2", xaxt='n', yaxt='n')
+w <- seq(0.5, 0.8, length=4)
+for(i in 1:length(w)){
+  weights <- abs(w[i] - Y)
+  weights <- weights*length(Y)/sum(weights)
+  intercept <- mean(weights*Y)
+  glmo1 <- glmnet(y=Y, x=X, lambda=0, alpha=0, 
+                  weights=weights, offset=rep(intercept, length(Y)), intercept=F, 
+                  family="binomial")
+  line <- c(intercept, coef(glmo1)[2:3,])
+  line <- line[1:2]/-line[3]
+  abline(line, col="purple", lty=2, lwd=if(w[i]==0.5) 2 else 1)
+}
+legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
+par(mfrow=c(1,1))
