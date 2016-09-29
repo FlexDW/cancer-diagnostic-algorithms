@@ -1,0 +1,85 @@
+require(glmnet)
+require(MASS)
+
+mu1 <- c(2, 4)
+mu2 <- c(5, 2)
+SIG1 <- matrix(c(1, -0.5, -0.5, 2), 2)
+SIG2 <- matrix(c(3, -0.1, -0.1, 0.5), 2)
+N <- c(50, 200)
+set.seed(28920)
+X <- rbind(mvrnorm(N[1], mu=mu1, Sigma=SIG1), mvrnorm(N[2], mu=mu2, Sigma=SIG2))
+Y <- c(rep(0, N[1]), rep(1, N[2]))
+
+Unused graphic...
+require(car)
+plot(X, pch=Y*2+1, col=Y+1, cex=0.5, cex.main=0.9, asp=1, 
+     main="Simulated Data with unequal COV", xlab="x1", ylab="x2", xaxt='n', yaxt='n')
+rad <- cumsum(rep(0.5, 4))
+for(r in rad){
+  ellipse(center=mu1, shape=SIG1, col=1, lwd=1, radius=r)
+  ellipse(center=mu2, shape=SIG2, col=2, lwd=1, radius=r)
+}
+legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
+
+w <- 0.20
+w <- abs(w - Y)
+w <- w*length(Y)/sum(w)
+intercept <- mean(w*Y)
+glmo1 <- glmnet(y=Y, 
+                x=X,
+                alpha=1,
+                weights=w,
+                offset=rep(intercept, length(Y)), 
+                intercept=F, 
+                family="binomial")
+paste("Selected variable:", which.max(rowSums(glmo1$beta != 0)))
+
+# X1 Marginal
+mu1.C <- 2
+mu1.T <- 5
+sd1.C <- 1
+sd1.T <- 3
+
+# X2 Marginal
+mu2.C <- 4
+mu2.T <- 2
+sd2.C <- 2
+sd2.T <- 0.5
+
+n <- 5000
+x1 <- c(rnorm(n, mean=mu1.C, sd=sd1.C), rnorm(n, mean=mu1.T, sd1.T))
+x2 <- c(rnorm(n, mean=mu2.C, sd=sd2.C), rnorm(n, mean=mu2.T, sd2.T))
+y <- c(rep(1, n), rep(0, n))
+dat <- data.frame(y=y, x1=x1, x2=x2)
+glmo1 <- glm(y ~ x1, family="binomial", data=dat)
+glmo2 <- glm(y ~ x2, family="binomial", data=dat)
+p1 <- predict(glmo1, dat, type="response")
+p2 <- predict(glmo2, dat, type="response")
+
+glmnet::auc(prob=p1, y=y)
+glmnet::auc(prob=p2, y=y)
+
+sensitivity(p1, dat$y, specificity=0.8)
+sensitivity(p2, dat$y, specificity=0.8)
+specificity(p1, dat$y, sensitivity=0.8)
+specificity(p2, dat$y, sensitivity=0.8)
+
+roc1 <- GRridge::roc(probs=p1, true=(y==1), cutoffs=seq(1, 0, length=101))
+roc2 <- GRridge::roc(probs=p2, true=(y==1), cutoffs=seq(1, 0, length=101))
+
+
+# X1 better specificity
+
+ROCplot <- plot(main="ROC Curve Comparison", 
+                xlab="FPR (1 - Specificity)",
+                ylab="Sensitivity",
+                cex.main=0.8, cex.lab=0.8, cex.axis=0.8,
+                t(roc1[1:2,]), type='l', col="blue")
+points(t(roc2[1:2,]), type='l', col="magenta")
+abline(v=0.1, lty=3)
+abline(h=0.9, lty=3)
+legend("bottomright", 
+       legend=paste("x",1:2,sep=""), 
+       col=c("blue", "magenta"), 
+       lty=1, cex=0.7)
+
