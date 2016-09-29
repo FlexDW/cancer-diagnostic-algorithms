@@ -25,30 +25,30 @@ mins <- apply(X, 2, min)
 mu.C <- colMeans(X.C + mins + 5)
 mu.T <- colMeans(X.T + mins + 5)
 
-# find estimate of expected 'random' correlation
-cl <- makeCluster(2)
-registerDoParallel(cl)
-registerDoParallel(cores=4)
-icount <- iter(1:1000)
-falsecor <- foreach(i=icount, .packages='MASS') %dopar% {
-  rCOR.C <- cor(mvrnorm(n=nC, mu=mu.C, Sigma=SIG.C))
-  rCOR.T <- cor(mvrnorm(n=nT, mu=mu.T, Sigma=SIG.T))
-  diag(rCOR.C) <- diag(rCOR.T) <- 0
-  c(sum(abs(as.numeric(rCOR.C))), sum(abs(as.numeric(rCOR.T))))
-}
-stopCluster(cl)
-
-falsecor <- colMeans(do.call(rbind, falsecor))
-falsecor.C <- falsecor[1]
-falsecor.T <- falsecor[2]
+# # find estimate of expected 'random' correlation
+# cl <- makeCluster(2)
+# registerDoParallel(cl)
+# registerDoParallel(cores=4)
+# icount <- iter(1:1000)
+# falsecor <- foreach(i=icount, .packages='MASS') %dopar% {
+#   rCOR.C <- cor(mvrnorm(n=nC, mu=mu.C, Sigma=SIG.C))
+#   rCOR.T <- cor(mvrnorm(n=nT, mu=mu.T, Sigma=SIG.T))
+#   diag(rCOR.C) <- diag(rCOR.T) <- 0
+#   c(sum(abs(as.numeric(rCOR.C))), sum(abs(as.numeric(rCOR.T))))
+# }
+# stopCluster(cl)
+# 
+# falsecor <- colMeans(do.call(rbind, falsecor))
+# falsecor.C <- falsecor[1]
+# falsecor.T <- falsecor[2]
 
 # simple reduction in correlation by increasing variance 
 corX.C <- cor(X.C)
 corX.T <- cor(X.T)
-totalcor.C <- sum(abs(as.numeric(corX.C)))
-totalcor.T <- sum(abs(as.numeric(corX.T)))
-newcor.C <- totalcor.C
-newcor.T <- totalcor.T
+# totalcor.C <- sum(abs(as.numeric(corX.C)))
+# totalcor.T <- sum(abs(as.numeric(corX.T)))
+# newcor.C <- totalcor.C
+# newcor.T <- totalcor.T
 
 # lambda <- 0
 # while(newcor.C > totalcor.C - falsecor.C){
