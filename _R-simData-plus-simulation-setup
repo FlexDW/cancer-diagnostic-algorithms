@@ -50,21 +50,21 @@ totalcor.T <- sum(abs(as.numeric(corX.T)))
 newcor.C <- totalcor.C
 newcor.T <- totalcor.T
 
-lambda <- 0
-while(newcor.C > totalcor.C - falsecor.C){
-  lambda <- lambda + 0.1
-  lamMat <- diag(lambda, 15)
-  corX.C <- cor(rbind(X.C, lamMat))
-  newcor.C <- sum(abs(as.numeric(corX.C)))
-} 
-
-lambda <- 0
-while(newcor.T > totalcor.T - falsecor.T){
-  lambda <- lambda + 0.1
-  lamMat <- diag(lambda, 15)
-  corX.T <- cor(rbind(X.T, lamMat))
-  newcor.T <- sum(abs(as.numeric(corX.T)))
-} 
+# lambda <- 0
+# while(newcor.C > totalcor.C - falsecor.C){
+#   lambda <- lambda + 0.1
+#   lamMat <- diag(lambda, 15)
+#   corX.C <- cor(rbind(X.C, lamMat))
+#   newcor.C <- sum(abs(as.numeric(corX.C)))
+# } 
+# 
+# lambda <- 0
+# while(newcor.T > totalcor.T - falsecor.T){
+#   lambda <- lambda + 0.1
+#   lamMat <- diag(lambda, 15)
+#   corX.T <- cor(rbind(X.T, lamMat))
+#   newcor.T <- sum(abs(as.numeric(corX.T)))
+# } 
 
 # convert cor back to cov
 sd.C <- sqrt(diag(SIG.C))
