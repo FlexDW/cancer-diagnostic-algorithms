@@ -55,7 +55,7 @@ corX.T <- cor(X.T)
 # lambda <- 0
 # while(newcor.C > totalcor.C - falsecor.C){
 #   lambda <- lambda + 0.1
-#   lamMat <- diag(lambda, 15)
+#   lamMat <- diag(lambda, ncol(X))
 #   corX.C <- cor(rbind(X.C, lamMat))
 #   newcor.C <- sum(abs(as.numeric(corX.C)))
 # } 
@@ -63,7 +63,7 @@ corX.T <- cor(X.T)
 # lambda <- 0
 # while(newcor.T > totalcor.T - falsecor.T){
 #   lambda <- lambda + 0.1
-#   lamMat <- diag(lambda, 15)
+#   lamMat <- diag(lambda, ncol(X))
 #   corX.T <- cor(rbind(X.T, lamMat))
 #   newcor.T <- sum(abs(as.numeric(corX.T)))
 # } 
@@ -73,8 +73,8 @@ sd.C <- sqrt(diag(SIG.C))
 sd.T <- sqrt(diag(SIG.T))
 covX.C <- corX.C
 covX.T <- corX.T
-for(i in 1:15){
-  for(j in 1:15){
+for(i in 1:ncol(X)){
+  for(j in 1:ncol(X)){
     covX.C[i, j] <- corX.C[i, j] * sd.C[i] * sd.C[j]
     covX.T[i, j] <- corX.T[i, j] * sd.T[i] * sd.T[j]
   }
