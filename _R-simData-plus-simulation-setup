@@ -7,9 +7,9 @@ require(foreach)
 
 # create dataset for copying the covariance
 Y <- as.numeric(!ctrlIndex)
-# cols <- unique(unlist(models))
+cols <- unique(unlist(models))
 # cols <- c(cols, sample(which(!(1:nrow(mirDat)) %in% cols), size=50))
-X <- t(mirDat) # [, cols]
+X <- t(mirDat)[, cols]
 refIDX <- match(mirs, colnames(X))
 
 p <- ncol(X)
@@ -19,19 +19,20 @@ nT <- sum(Y == 1)
 # Obtain average random variance values
 X.C <- X[Y==0, ]
 X.T <- X[Y==1, ]
-SIG.C <- diag(diag(var(X.C)))
-SIG.T <- diag(diag(var(X.T)))
+# SIG.C <- diag(diag(var(X.C)))
+# SIG.T <- diag(diag(var(X.T)))
 
 # adjust means to be positive for gamma sampling
 mins <- apply(X, 2, min)
 mu.C <- colMeans(X.C + mins + 5)
 mu.T <- colMeans(X.T + mins + 5)
 
-# # find estimate of expected 'random' correlation
+# find estimate of expected 'random' correlation
+# set.seed(10101)
 # cl <- makeCluster(2)
 # registerDoParallel(cl)
 # registerDoParallel(cores=4)
-# icount <- iter(1:1000)
+# icount <- iter(1:25)
 # falsecor <- foreach(i=icount, .packages='MASS') %dopar% {
 #   rCOR.C <- cor(mvrnorm(n=nC, mu=mu.C, Sigma=SIG.C))
 #   rCOR.T <- cor(mvrnorm(n=nT, mu=mu.T, Sigma=SIG.T))
@@ -51,7 +52,7 @@ corX.T <- cor(X.T)
 # totalcor.T <- sum(abs(as.numeric(corX.T)))
 # newcor.C <- totalcor.C
 # newcor.T <- totalcor.T
-
+# 
 # lambda <- 0
 # while(newcor.C > totalcor.C - falsecor.C){
 #   lambda <- lambda + 0.1
@@ -67,8 +68,8 @@ corX.T <- cor(X.T)
 #   corX.T <- cor(rbind(X.T, lamMat))
 #   newcor.T <- sum(abs(as.numeric(corX.T)))
 # } 
-
-# convert cor back to cov
+# 
+# # convert cor back to cov
 # sd.C <- sqrt(diag(SIG.C))
 # sd.T <- sqrt(diag(SIG.T))
 # covX.C <- corX.C
@@ -80,16 +81,20 @@ corX.T <- cor(X.T)
 #   }
 # }
 covX.C <- cov(X.C)
-covX.T <- Cov(X.T)
+covX.T <- cov(X.T)
 
 simData <- function(nC, nT, seed=9999){
   if(!is.null(seed)){
     set.seed(seed)
   }
   randIdx <- sample(1:(nC + nT))
-  X <- rbind(lcmix::rmvgamma(n=nC, shape=mu.C*0.4, rate=0.4, corr=corX.C),
-             MASS::mvrnorm(n=nT, mu=mu.T, Sigma=covX.T))[randIdx,]
-  Y <- c(rep(0, nC), rep(1, nT))[randIdx]
+  rate <- 0.35
+  X1 <- rbind(lcmix::rmvgamma(n=nC, shape=mu.C*rate, rate=rate, corr=corX.C),
+              MASS::mvrnorm(n=nT, mu=mu.T, Sigma=covX.T))
+  X2 <- rbind(-MASS::mvrnorm(n=nC, mu=-mu.C, Sigma=covX.C),
+              -lcmix::rmvgamma(n=nT, shape=mu.T*rate, rate=rate, corr=corX.T))
+  X <- cbind(X1, X2)[randIdx,]
   X <- scale(X)
+  Y <- c(rep(0, nC), rep(1, nT))[randIdx]
   return(list(X=X, Y=Y))
 }
