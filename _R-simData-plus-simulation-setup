@@ -7,7 +7,9 @@ require(foreach)
 
 # create dataset for copying the covariance
 Y <- as.numeric(!ctrlIndex)
-X <- t(mirDat)[, unique(unlist(models))]
+cols <- unique(unlist(models))
+cols <- c(cols, sample(which(!(1:nrow(mirDat)) %in% cols), size=50))
+X <- t(mirDat)[, cols]
 refIDX <- match(mirs, colnames(X))
 
 p <- ncol(X)
