@@ -88,11 +88,11 @@ simData <- function(nC, nT, seed=9999){
     set.seed(seed)
   }
   randIdx <- sample(1:(nC + nT))
-  rate <- 0.35
+  rate <- 0.4
   X1 <- rbind(lcmix::rmvgamma(n=nC, shape=mu.C*rate, rate=rate, corr=corX.C),
               MASS::mvrnorm(n=nT, mu=mu.T, Sigma=covX.T))
-  X2 <- rbind(-MASS::mvrnorm(n=nC, mu=-mu.C, Sigma=covX.C),
-              -lcmix::rmvgamma(n=nT, shape=mu.T*rate, rate=rate, corr=corX.T))
+  X2 <- rbind(-MASS::mvrnorm(n=nC, mu=mu.T, Sigma=covX.T),
+              -lcmix::rmvgamma(n=nT, shape=mu.C*rate, rate=rate, corr=corX.C))
   X <- cbind(X1, X2)[randIdx,]
   X <- scale(X)
   Y <- c(rep(0, nC), rep(1, nT))[randIdx]
