@@ -1,6 +1,3 @@
-require(doParallel)
-require(foreach)
-
 # Requires mirDat dataset and candidate models loaded:
 # source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/2-R-load-dataset")
 # source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/X-R-unique-models")
@@ -8,7 +5,6 @@ require(foreach)
 # create dataset for copying the covariance
 Y <- as.numeric(!ctrlIndex)
 cols <- unique(unlist(models))
-# cols <- c(cols, sample(which(!(1:nrow(mirDat)) %in% cols), size=50))
 X <- t(mirDat)[, cols]
 refIDX <- match(mirs, colnames(X))
 
@@ -19,71 +15,22 @@ nT <- sum(Y == 1)
 # Obtain average random variance values
 X.C <- X[Y==0, ]
 X.T <- X[Y==1, ]
-# SIG.C <- diag(diag(var(X.C)))
-# SIG.T <- diag(diag(var(X.T)))
 
 # adjust means to be positive for gamma sampling
 mins <- apply(X, 2, min)
 mu.C <- colMeans(X.C + mins + 5)
 mu.T <- colMeans(X.T + mins + 5)
 
-# find estimate of expected 'random' correlation
-# set.seed(10101)
-# cl <- makeCluster(2)
-# registerDoParallel(cl)
-# registerDoParallel(cores=4)
-# icount <- iter(1:25)
-# falsecor <- foreach(i=icount, .packages='MASS') %dopar% {
-#   rCOR.C <- cor(mvrnorm(n=nC, mu=mu.C, Sigma=SIG.C))
-#   rCOR.T <- cor(mvrnorm(n=nT, mu=mu.T, Sigma=SIG.T))
-#   diag(rCOR.C) <- diag(rCOR.T) <- 0
-#   c(sum(abs(as.numeric(rCOR.C))), sum(abs(as.numeric(rCOR.T))))
-# }
-# stopCluster(cl)
-# 
-# falsecor <- colMeans(do.call(rbind, falsecor))
-# falsecor.C <- falsecor[1]
-# falsecor.T <- falsecor[2]
-
-# simple reduction in correlation by increasing variance 
+# find correlation and covariance
 corX.C <- cor(X.C)
 corX.T <- cor(X.T)
-# totalcor.C <- sum(abs(as.numeric(corX.C)))
-# totalcor.T <- sum(abs(as.numeric(corX.T)))
-# newcor.C <- totalcor.C
-# newcor.T <- totalcor.T
-# 
-# lambda <- 0
-# while(newcor.C > totalcor.C - falsecor.C){
-#   lambda <- lambda + 0.1
-#   lamMat <- diag(lambda, ncol(X))
-#   corX.C <- cor(rbind(X.C, lamMat))
-#   newcor.C <- sum(abs(as.numeric(corX.C)))
-# } 
-# 
-# lambda <- 0
-# while(newcor.T > totalcor.T - falsecor.T){
-#   lambda <- lambda + 0.1
-#   lamMat <- diag(lambda, ncol(X))
-#   corX.T <- cor(rbind(X.T, lamMat))
-#   newcor.T <- sum(abs(as.numeric(corX.T)))
-# } 
-# 
-# # convert cor back to cov
-# sd.C <- sqrt(diag(SIG.C))
-# sd.T <- sqrt(diag(SIG.T))
-# covX.C <- corX.C
-# covX.T <- corX.T
-# for(i in 1:ncol(X)){
-#   for(j in 1:ncol(X)){
-#     covX.C[i, j] <- corX.C[i, j] * sd.C[i] * sd.C[j]
-#     covX.T[i, j] <- corX.T[i, j] * sd.T[i] * sd.T[j]
-#   }
-# }
 covX.C <- cov(X.C)
 covX.T <- cov(X.T)
 
 simData <- function(nC, nT, seed=9999){
+# Function to generate data.
+# Relies on variables in global memory.
+  
   if(!is.null(seed)){
     set.seed(seed)
   }
