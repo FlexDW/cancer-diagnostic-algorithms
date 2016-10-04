@@ -1,31 +1,25 @@
 require(glmnet)
 require(MASS)
-require(car)
 
 set.seed(28920)
 
-mu1 <- c(2, 4)
-mu2 <- c(5, 2)
-SIG1 <- matrix(c(1, -0.5, -0.5, 2), 2)
-SIG2 <- matrix(c(3, -0.1, -0.1, 0.5), 2)
+mu.C <- c(2, 4)
+mu.T <- c(5, 2)
+SIG.C <- matrix(c(1, -0.5, -0.5, 2), 2)
+SIG.T <- matrix(c(3, -0.1, -0.1, 0.5), 2)
 
 # IMAGE: BALANCED
 png(filename="Diagrams/trivial_example_unequal_COV.png", width=480)
-N <- c(100, 100)
-X <- rbind(mvrnorm(N[1], mu=mu1, Sigma=SIG1), mvrnorm(N[2], mu=mu2, Sigma=SIG2))
-X <- scale(X)
-Y <- c(rep(0, N[1]), rep(1, N[2]))
-plot(X, pch=Y*2+1, col=Y+1, cex=0.5, cex.main=0.9, asp=1, 
-     main="Trivial example - Equal Proportions", xlab="", ylab="", xaxt='n', yaxt='n')
+N1 <- c(100, 100)
+X1 <- rbind(mvrnorm(N1[1], mu=mu.C, Sigma=SIG.C), mvrnorm(N1[2], mu=mu.T, Sigma=SIG.T))
+Y1 <- c(rep(0, N1[1]), rep(1, N1[2]))
+X1 <- scale(X1)
+plot(X1, pch=Y1*2+1, col=Y1+1, cex=0.5, cex.main=0.9, asp=1, 
+     main="Scenario 1 - Equal Proportions", xlab="", ylab="", xaxt='n', yaxt='n')
 title(xlab="x1", ylab="x2", line=1)
-rad <- cumsum(rep(0.5, 4))
-for(r in rad){
-  ellipse(center=mu1, shape=SIG1, col=1, lwd=1, radius=r)
-  ellipse(center=mu2, shape=SIG2, col=2, lwd=1, radius=r)
-}
-glmo1 <- glmnet(y=Y, x=X, alpha=1, family="binomial")
-line <- coef(glmo1)[1:2, ncol(glmo1$beta)]/-coef(glmo1)[3, ncol(glmo1$beta)]
-abline(line, col="purple", lty=2)
+glmo1 <- glmnet(y=Y1, x=X1, alpha=1, family="binomial")
+line1 <- coef(glmo1)[1:2, ncol(glmo1$beta)]/-coef(glmo1)[3, ncol(glmo1$beta)]
+abline(line1, col="purple", lty=2)
 title(sub=paste("Variable selected by LASSO: x", which.max(rowSums(glmo1$beta != 0)), sep=""),
       cex.sub=0.9, line=3)
 legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
@@ -34,32 +28,54 @@ dev.off()
 # IMAGE: UNBALANCED
 png(filename="Diagrams/trivial_example_unbalanced.png", width=480*2)
 par(mfrow=c(1,2))
-N <- c(100, 1000)
-X <- rbind(mvrnorm(N[1], mu=mu1, Sigma=SIG1), mvrnorm(N[2], mu=mu2, Sigma=SIG2))
-X <- scale(X)
-Y <- c(rep(0, N[1]), rep(1, N[2]))
-plot(X, pch=Y*2+1, col=Y+1, cex=0.5, cex.main=0.9, asp=1, 
-     main="Unbalanced (Cases 10: Controls 1)", xlab="", ylab="", xaxt='n', yaxt='n')
+N2 <- c(100, 1000)
+X2 <- rbind(mvrnorm(N2[1], mu=mu.C, Sigma=SIG.C), mvrnorm(N2[2], mu=mu.T, Sigma=SIG.T))
+X2 <- scale(X2)
+Y2 <- c(rep(0, N2[1]), rep(1, N2[2]))
+plot(X2, pch=Y2*2+1, col=Y2+1, cex=0.5, cex.main=0.9, asp=1, 
+     main="Scenario 2 (Cases 10: Controls 1)", xlab="", ylab="", xaxt='n', yaxt='n')
 title(xlab="x1", ylab="x2", line=1)
-glmo2 <- glmnet(y=Y, x=X, alpha=1, family="binomial")
-line <- coef(glmo2)[1:2, ncol(glmo2$beta)]/-coef(glmo2)[3, ncol(glmo2$beta)]
-abline(line, col="purple", lty=2)
+glmo2 <- glmnet(y=Y2, x=X2, alpha=1, family="binomial")
+line2 <- coef(glmo2)[1:2, ncol(glmo2$beta)]/-coef(glmo2)[3, ncol(glmo2$beta)]
+abline(line2, col="purple", lty=2)
 title(sub=paste("Variable selected by LASSO: x", which.max(rowSums(glmo2$beta != 0)), sep=""),
       cex.sub=0.9, line=3)
 legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
 
-N <- c(1000, 100)
-X <- rbind(mvrnorm(N[1], mu=mu1, Sigma=SIG1), mvrnorm(N[2], mu=mu2, Sigma=SIG2))
-Y <- c(rep(0, N[1]), rep(1, N[2]))
-plot(X, pch=Y*2+1, col=Y+1, cex=0.5, cex.main=0.9, asp=1, 
-     main="Unbalanced (Cases 1: Controls 10)", xlab="", ylab="", xaxt='n', yaxt='n')
+N3 <- c(1000, 100)
+X3 <- rbind(mvrnorm(N3[1], mu=mu.C, Sigma=SIG.C), mvrnorm(N3[2], mu=mu.T, Sigma=SIG.T))
+Y3 <- c(rep(0, N3[1]), rep(1, N3[2]))
+plot(X3, pch=Y3*2+1, col=Y3+1, cex=0.5, cex.main=0.9, asp=1, 
+     main="Scenario 3 (Cases 1: Controls 10)", xlab="", ylab="", xaxt='n', yaxt='n')
 title(xlab="x1", ylab="x2", line=1)
-glmo3 <- glmnet(y=Y, x=X, alpha=1, family="binomial")
-line <- coef(glmo3)[1:2, ncol(glmo3$beta)]/-coef(glmo3)[3, ncol(glmo3$beta)]
-abline(line, col="purple", lty=2)
+glmo3 <- glmnet(y=Y3, x=X3, alpha=1, family="binomial")
+line3 <- coef(glmo3)[1:2, ncol(glmo3$beta)]/-coef(glmo3)[3, ncol(glmo3$beta)]
+abline(line3, col="purple", lty=2)
 title(sub=paste("Variable selected by LASSO: x", which.max(rowSums(glmo3$beta != 0)), sep=""),
       cex.sub=0.9, line=3)
 legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
+dev.off()
+
+
+# IMAGE: REG PATH
+png(filename="Diagrams/unbalanced_regularization_path.png", width=480*2)
+par(mfrow=c(1, 2))
+plot(glmo2, main="Scenario 2 - Regularization Path", col=c("blue", "magenta"))
+legend("topright", legend=c("x1", "x2"), lty=1, col=c("blue", "magenta"), cex=0.8)
+plot(glmo3, main="Scenario 3 - Regularization Path", col=c("blue", "magenta"))
+legend("topright", legend=c("x1", "x2"), lty=1, col=c("blue", "magenta"), cex=0.8)
+dev.off()
+
+png(filename="Diagrams/weighted_regularization_path.png", width=480*3)
+par(mfrow=c(1, 3))
+glmo4 <- glmnet(y=Y1, x=X1, alpha=1, family="binomial", weights=c(rep(10, N1[1]), rep(1, N1[2])))
+glmo5 <- glmnet(y=Y1, x=X1, alpha=1, family="binomial", weights=c(rep(1, N1[1]), rep(10, N1[2])))
+plot(glmo1, main="Scenario 1 - Balanced", col=c("blue", "magenta"), cex.main=1.4)
+legend("topright", legend=c("x1", "x2"), lty=1, col=c("blue", "magenta"), cex=1.2)
+plot(glmo4, main="Scenario 1 - Weighted to Controls", col=c("blue", "magenta"), cex.main=1.2)
+legend("topright", legend=c("x1", "x2"), lty=1, col=c("blue", "magenta"), cex=1.4)
+plot(glmo5, main="Scenario 1 - Weighted to Cases", col=c("blue", "magenta"), cex.main=1.2)
+legend("topright", legend=c("x1", "x2"), lty=1, col=c("blue", "magenta"), cex=1.4)
 dev.off()
 
 
@@ -75,6 +91,9 @@ mu2.C <- 4
 mu2.T <- 2
 sd2.C <- 2
 sd2.T <- 0.5
+
+N <- c(1000, 1000)
+X <- rbind(mvrnorm(N[1], mu=mu.C, Sigma=SIG.C), mvrnorm(N[2], mu=mu.T, Sigma=SIG.T))
 
 png(filename="Diagrams/trivial_example_marginals.png", width=480*2)
 par(mfrow=c(1,2))
@@ -104,3 +123,4 @@ dmax <- max(c(dnorm(X[, 2], mean=mu2.C, sd=sd2.C), dnorm(X[, 2], mean=mu2.T, sd=
 abline(v=specificity, lty=3)
 text(x=specificity, y=dmax, labels=paste("Specificity = 0.9, sensitivity =", sensitivity), pos=4, cex=0.9)
 dev.off()
+
