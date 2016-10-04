@@ -32,46 +32,42 @@ N2 <- c(100, 1000)
 X2 <- rbind(mvrnorm(N2[1], mu=mu.C, Sigma=SIG.C), mvrnorm(N2[2], mu=mu.T, Sigma=SIG.T))
 X2 <- scale(X2)
 Y2 <- c(rep(0, N2[1]), rep(1, N2[2]))
-plot(X2, pch=Y2*2+1, col=Y2+1, cex=0.5, cex.main=0.9, asp=1, 
-     main="Scenario 2 (Cases 10: Controls 1)", xlab="", ylab="", xaxt='n', yaxt='n')
+plot(X2, pch=Y2*2+1, col=Y2+1, asp=1, 
+     main="Unbalanced (Cases 10: Controls 1)", xlab="", ylab="", xaxt='n', yaxt='n')
 title(xlab="x1", ylab="x2", line=1)
 glmo2 <- glmnet(y=Y2, x=X2, alpha=1, family="binomial")
 line2 <- coef(glmo2)[1:2, ncol(glmo2$beta)]/-coef(glmo2)[3, ncol(glmo2$beta)]
 abline(line2, col="purple", lty=2)
-title(sub=paste("Variable selected by LASSO: x", which.max(rowSums(glmo2$beta != 0)), sep=""),
-      cex.sub=0.9, line=3)
 legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
 
 N3 <- c(1000, 100)
 X3 <- rbind(mvrnorm(N3[1], mu=mu.C, Sigma=SIG.C), mvrnorm(N3[2], mu=mu.T, Sigma=SIG.T))
 Y3 <- c(rep(0, N3[1]), rep(1, N3[2]))
-plot(X3, pch=Y3*2+1, col=Y3+1, cex=0.5, cex.main=0.9, asp=1, 
-     main="Scenario 3 (Cases 1: Controls 10)", xlab="", ylab="", xaxt='n', yaxt='n')
+plot(X3, pch=Y3*2+1, col=Y3+1, asp=1, 
+     main="Unbalanced (Cases 1: Controls 10)", xlab="", ylab="", xaxt='n', yaxt='n')
 title(xlab="x1", ylab="x2", line=1)
 glmo3 <- glmnet(y=Y3, x=X3, alpha=1, family="binomial")
 line3 <- coef(glmo3)[1:2, ncol(glmo3$beta)]/-coef(glmo3)[3, ncol(glmo3$beta)]
 abline(line3, col="purple", lty=2)
-title(sub=paste("Variable selected by LASSO: x", which.max(rowSums(glmo3$beta != 0)), sep=""),
-      cex.sub=0.9, line=3)
 legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
 dev.off()
 
-
-# IMAGE: REG PATH
 png(filename="Diagrams/unbalanced_regularization_path.png", width=480*2)
-par(mfrow=c(1, 2))
+par(mfrow=c(1,2))
 plot(glmo2, col=c("blue", "magenta"))
 axis(side = 3, at = seq(par("usr")[1], par("usr")[2], len = 1000), tck = -0.5, lwd = 2, col = "white", labels = F)
 abline(h=par("usr")[4])
-title(main="Scenario 2 - Regularization Path")
+title(main="Regularization Path (Cases 10: Controls 1)")
 legend("topright", legend=c("x1", "x2"), lty=1, col=c("blue", "magenta"), cex=0.8)
 plot(glmo3, col=c("blue", "magenta"))
 axis(side = 3, at = seq(par("usr")[1], par("usr")[2], len = 1000), tck = -0.5, lwd = 2, col = "white", labels = F)
 abline(h=par("usr")[4])
-title(main="Scenario 3 - Regularization Path")
+title(main="Regularization Path (Cases 1: Controls 10)")
 legend("topright", legend=c("x1", "x2"), lty=1, col=c("blue", "magenta"), cex=0.8)
 dev.off()
 
+
+# IMAGE: REG PATH
 png(filename="Diagrams/weighted_regularization_path.png", width=480*3)
 par(mfrow=c(1, 3))
 glmo4 <- glmnet(y=Y1, x=X1, alpha=1, family="binomial", weights=c(rep(1, N1[1]), rep(10, N1[2])))
@@ -138,6 +134,3 @@ dmax <- max(c(dnorm(X[, 2], mean=mu2.C, sd=sd2.C), dnorm(X[, 2], mean=mu2.T, sd=
 abline(v=specificity, lty=3)
 text(x=specificity, y=dmax, labels=paste("Specificity = 0.9, sensitivity =", sensitivity), pos=4, cex=0.9)
 dev.off()
-
-
-
