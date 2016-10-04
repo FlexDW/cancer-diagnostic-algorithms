@@ -20,8 +20,7 @@ title(xlab="x1", ylab="x2", line=1)
 glmo1 <- glmnet(y=Y1, x=X1, alpha=1, family="binomial")
 line1 <- coef(glmo1)[1:2, ncol(glmo1$beta)]/-coef(glmo1)[3, ncol(glmo1$beta)]
 abline(line1, col="purple", lty=2)
-title(sub=paste("Variable selected by LASSO: x", which.max(rowSums(glmo1$beta != 0)), sep=""),
-      cex.sub=0.9, line=3)
+# title(sub=paste("Variable selected by LASSO: x", which.max(rowSums(glmo1$beta != 0)), sep=""), cex.sub=0.9, line=3)
 legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
 dev.off()
 
