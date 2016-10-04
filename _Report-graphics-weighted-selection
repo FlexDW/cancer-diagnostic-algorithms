@@ -61,7 +61,7 @@ legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black
 dev.off()
 
 
-# IMAGE: ROC
+# IMAGE: MARGINAL DISTRIBUTIONS
 # X1 Marginal
 mu1.C <- 2
 mu1.T <- 5
@@ -74,31 +74,31 @@ mu2.T <- 2
 sd2.C <- 2
 sd2.T <- 0.5
 
-nC <- 10000
-nT <- 10000
-x1 <- c(rnorm(nC, mean=mu1.C, sd=sd1.C), rnorm(nT, mean=mu1.T, sd1.T))
-x2 <- c(rnorm(nC, mean=mu2.C, sd=sd2.C), rnorm(nT, mean=mu2.T, sd2.T))
-y <- c(rep(1, nC), rep(0, nT))
-dat <- data.frame(y=y, x1=x1, x2=x2)
-glmo1 <- glm(y ~ x1, family="binomial", data=dat)
-glmo2 <- glm(y ~ x2, family="binomial", data=dat)
-p1 <- predict(glmo1, dat, type="response")
-p2 <- predict(glmo2, dat, type="response")
+png(filename="Diagrams/trivial_example_marginals.png", width=480*2)
+par(mfrow=c(1,2))
+x1range <- range(X[, 1])
+curve(dnorm(x, mean=mu1.C, sd=sd1.C), from=x1range[1], to=x1range[2],
+      main="x1 marginal distribution", xaxt='n', yaxt='n', xlab="", ylab="",
+      col="black")
+curve(dnorm(x, mean=mu1.T, sd=sd1.T), add=T, col="red")
+title(xlab="x1", cex.sub=0.9, line=1)
+title(ylab="density", cex.sub=0.9, line=1)
+specificity <- qnorm(0.9, mean=mu1.C, sd=sd1.C)
+sensitivity <- round(1 - pnorm(specificity, mean=mu1.T, sd=sd1.T), 2)
+dmax <- max(c(dnorm(X[, 1], mean=mu1.C, sd=sd1.C), dnorm(X[, 1], mean=mu1.T, sd=sd1.T)))
+abline(v=specificity, lty=3)
+text(x=specificity, y=dmax, labels=paste("Specificity = 0.9, sensitivity =", sensitivity), pos=4, cex=0.9)
 
-roc1 <- GRridge::roc(probs=p1, true=(y==1), cutoffs=seq(1, 0, length=101))
-roc2 <- GRridge::roc(probs=p2, true=(y==1), cutoffs=seq(1, 0, length=101))
-
-png(filename="Diagrams/ROC_comparison_x1x2_marginal.png", width=480)
-ROCplot <- plot(main="ROC Curve Comparison", 
-                xlab="FPR (1 - Specificity)",
-                ylab="Sensitivity",
-                cex.main=0.8, cex.lab=0.8, cex.axis=0.8,
-                t(roc1[1:2,]), type='l', col="blue")
-points(t(roc2[1:2,]), type='l', col="magenta")
-abline(v=0.1, lty=3)
-legend("bottomright", 
-       legend=c(paste("x1, AUC: ", round(glmnet::auc(prob=p1, y=y), 3)),
-                paste("x2, AUC: ", round(glmnet::auc(prob=p2, y=y), 3))), 
-       col=c("blue", "magenta"),
-       lty=1, cex=0.7)
+x2range <- range(X[, 2])
+curve(dnorm(x, mean=mu2.T, sd=sd2.T), from=x2range[1], to=x2range[2],
+      main="x2 marginal distribution", xaxt='n', yaxt='n', xlab="", ylab="",
+      col="red")
+curve(dnorm(x, mean=mu2.C, sd=sd2.C), add=T, col="black")
+title(xlab="x2", cex.sub=0.9, line=1)
+title(ylab="density", cex.sub=0.9, line=1)
+specificity <- qnorm(0.1, mean=mu2.C, sd=sd2.C)
+sensitivity <- round(pnorm(specificity, mean=mu2.T, sd=sd2.T), 2)
+dmax <- max(c(dnorm(X[, 2], mean=mu2.C, sd=sd2.C), dnorm(X[, 2], mean=mu2.T, sd=sd2.T)))
+abline(v=specificity, lty=3)
+text(x=specificity, y=dmax, labels=paste("Specificity = 0.9, sensitivity =", sensitivity), pos=4, cex=0.9)
 dev.off()
