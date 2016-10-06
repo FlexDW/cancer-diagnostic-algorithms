@@ -42,8 +42,8 @@ curve(dbeta(x, aC, bC), col=3, add=T);
 abline(v=qbeta(0.9, aC, bC), lty=3)
 legend("topright", legend=c("Tmr", "Ctrl"), col=2:3, lty=1, cex=0.6)
 ROC2 <- fROC(x, aC, bC, aT, bT)
-paste("AUC:", round(GRridge::auc(t(ROC2)), 3))
-paste("Sensitivity:", round(1 - pbeta(qbeta(0.9, aC, bC), aT, bT), 3))
+#paste("AUC:", round(GRridge::auc(t(ROC2)), 3))
+#paste("Sensitivity:", round(1 - pbeta(qbeta(0.9, aC, bC), aT, bT), 3))
 
 # Scenario 3: Higher Sensitivity
 aC <- 2; bC <- 5.4; #curve(dbeta(x, aC, bC));
@@ -56,12 +56,12 @@ curve(dbeta(x, aT, bT), col=2, add=T);
 abline(v=qbeta(0.9, aC, bC), lty=3)
 legend("topright", legend=c("Tmr", "Ctrl"), col=2:3, lty=1, cex=0.6)
 ROC3 <- fROC(x, aC, bC, aT, bT)
-paste("AUC:", round(GRridge::auc(t(ROC3)), 3))
-paste("Sensitivity:", round(1 - pbeta(qbeta(0.9, aC, bC), aT, bT), 3))
+#paste("AUC:", round(GRridge::auc(t(ROC3)), 3))
+#paste("Sensitivity:", round(1 - pbeta(qbeta(0.9, aC, bC), aT, bT), 3))
 dev.off()
 
 # compare ROC Curves
-png(filename="Diagrams/AUC_vs_Sensitivity_ROC_comparison.png")
+png(filename="Diagrams/AUC_vs_Sensitivity_ROC_comparison.png", width=400, height=400)
 ROCplot <- plot(main="ROC Curve Comparison", 
                 xlab="FPR (1 - Specificity)",
                 ylab="Sensitivity",
@@ -70,7 +70,7 @@ ROCplot <- plot(main="ROC Curve Comparison",
 points(ROC3, type='l', col="magenta")
 abline(v=0.1, lty=3)
 legend("bottomright", 
-       legend=1:2, 
+       legend=c(paste("AUC:", round(GRridge::auc(t(ROC2)), 3)), paste("AUC:", round(GRridge::auc(t(ROC3)), 3))), 
        col=c("blue", "magenta"), 
        lty=1, cex=0.7, title="Scenario:")
 dev.off()
