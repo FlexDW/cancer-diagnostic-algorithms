@@ -9,7 +9,7 @@ SIG.C <- matrix(c(1, -0.5, -0.5, 2), 2)
 SIG.T <- matrix(c(3, -0.1, -0.1, 0.5), 2)
 
 # IMAGE: BALANCED
-png(filename="Diagrams/trivial_example_unequal_COV.png", width=480)
+png(filename="Diagrams/trivial_example_unequal_COV.png", width=350, height=350)
 N1 <- c(100, 100)
 X1 <- rbind(mvrnorm(N1[1], mu=mu.C, Sigma=SIG.C), mvrnorm(N1[2], mu=mu.T, Sigma=SIG.T))
 Y1 <- c(rep(0, N1[1]), rep(1, N1[2]))
@@ -25,7 +25,7 @@ legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black
 dev.off()
 
 # IMAGE: UNBALANCED
-png(filename="Diagrams/trivial_example_unbalanced.png", width=480*2)
+png(filename="Diagrams/trivial_example_unbalanced.png", width=350*2, height=350)
 par(mfrow=c(1,2))
 N2 <- c(100, 1000)
 X2 <- rbind(mvrnorm(N2[1], mu=mu.C, Sigma=SIG.C), mvrnorm(N2[2], mu=mu.T, Sigma=SIG.T))
@@ -51,7 +51,7 @@ abline(line3, col="purple", lty=2)
 legend("topright", legend=c("Tumor", "Healthy"), pch=c(3,1), col=c("red", "black"), cex=0.8)
 dev.off()
 
-png(filename="Diagrams/unbalanced_regularization_path.png", width=480*2)
+png(filename="Diagrams/unbalanced_regularization_path.png", width=350*2, height=350)
 par(mfrow=c(1,2))
 plot(glmo2, col=c("blue", "magenta"))
 axis(side = 3, at = seq(par("usr")[1], par("usr")[2], len = 1000), tck = -0.5, lwd = 2, col = "white", labels = F)
@@ -67,7 +67,7 @@ dev.off()
 
 
 # IMAGE: REG PATH
-png(filename="Diagrams/weighted_regularization_path.png", width=480*3)
+png(filename="Diagrams/weighted_regularization_path.png", width=350*3, height=350)
 par(mfrow=c(1, 3))
 glmo4 <- glmnet(y=Y1, x=X1, alpha=1, family="binomial", weights=c(rep(1, N1[1]), rep(10, N1[2])))
 glmo5 <- glmnet(y=Y1, x=X1, alpha=1, family="binomial", weights=c(rep(10, N1[1]), rep(1, N1[2])))
@@ -105,7 +105,7 @@ sd2.T <- 0.5
 N <- c(1000, 1000)
 X <- rbind(mvrnorm(N[1], mu=mu.C, Sigma=SIG.C), mvrnorm(N[2], mu=mu.T, Sigma=SIG.T))
 
-png(filename="Diagrams/trivial_example_marginals.png", width=480*2)
+png(filename="Diagrams/trivial_example_marginals.png", width=350*2, height=350)
 par(mfrow=c(1,2))
 x1range <- range(X[, 1])
 curve(dnorm(x, mean=mu1.C, sd=sd1.C), from=x1range[1], to=x1range[2],
