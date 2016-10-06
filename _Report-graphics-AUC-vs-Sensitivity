@@ -1,3 +1,11 @@
+
+png(filename="Diagrams/example_ROC_curve.png", width=350, height=350)
+p <- c(runif(300)^4, runif(700)^(1/2))
+Y <- c(rep(0, 300), rep(1, 700))
+ROC <- t(GRridge::roc(prob=p, true=Y==1, cutoff=seq(1, 0, by=-0.001))[1:2,])
+plot(ROC, type='l', col='blue', lwd=2, main="Example ROC Curve Comparison", asp=1)
+dev.off()
+
 fROC <- function(x, aC, bC, aT, bT){
   FPR <- 1 - pbeta(x, aC, bC)
   TPR <- 1 - pbeta(x, aT, bT)
