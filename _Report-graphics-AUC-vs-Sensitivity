@@ -62,7 +62,7 @@ dev.off()
 
 # compare ROC Curves
 png(filename="Diagrams/AUC_vs_Sensitivity_ROC_comparison.png", width=400, height=400)
-ROCplot <- plot(main="ROC Curve Comparison", 
+ROCplot <- plot(main="Equal AUC, different sensitivity in target range", 
                 xlab="FPR (1 - Specificity)",
                 ylab="Sensitivity",
                 cex.main=0.8, cex.lab=0.8, cex.axis=0.8,
