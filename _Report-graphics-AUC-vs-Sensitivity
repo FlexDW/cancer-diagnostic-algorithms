@@ -1,5 +1,5 @@
 
-png(filename="Diagrams/example_ROC_curve.png", width=350, height=350)
+png(filename="Diagrams/example_ROC_curve.png", width=400, height=400)
 p <- c(runif(300)^4, runif(700)^(1/2))
 Y <- c(rep(0, 300), rep(1, 700))
 ROC <- t(GRridge::roc(prob=p, true=Y==1, cutoff=seq(1, 0, by=-0.001))[1:2,])
