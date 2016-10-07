@@ -71,3 +71,8 @@ mirDat <- g(mirDat)
 # standardize
 isoDat <- t(scale(t(isoDat)))
 mirDat <- t(scale(t(mirDat)))
+
+# remove unused
+rm(fname, idx, splitIsoDat, setIndex, mirIndex, isomirIndex, g)
+# save(isoDat, mirLookup, isomirs, barcodes, mirs, mirDat, PID, ctrlIndex, ctrlPID, tmrPID, isoRaw, mirRaw, isoLibSize, isoRelLibSize, isoNF, mirLibSize, mirRelLibSize, mirNF, file="Rdata\load_data.Rdata")
+
