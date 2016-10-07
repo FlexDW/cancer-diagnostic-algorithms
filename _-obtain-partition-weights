@@ -1,3 +1,10 @@
+# Objects added to memory:
+# - grLambdas
+#    $GRridgeL2: optimal L2 penalty in GRridge formulation
+#    $glmnetL2: optimal L2 penalty in glmnet formulation
+#    $groupweights: group penalty multipliers
+#    $combined: combined group penalty multipliers as p-length vector
+
 try(load("Rdata/grLambdas.Rdata"))
 if(!"grLambdas" %in% ls()) { 
   # Annotation partitions
@@ -7,7 +14,7 @@ if(!"grLambdas" %in% ls()) {
   mirRegion <- mirRegion[lapply(mirRegion, length) > 5]
   mirChromo <- split(1:length(mirs), mirLookup$chromosome[mirIndex])
   mirChromo <- mirChromo[lapply(mirChromo, length) > 5]
-
+  
   # Distributional partitions
   mirNorm <- sweep(mirRaw, 2, mirNF, "/")
   means <- rowMeans(mirNorm)
@@ -15,13 +22,13 @@ if(!"grLambdas" %in% ls()) {
   rm(mirNorm)
   mirCounts <- CreatePartition(means, ngroup=8)
   mirSDs <- CreatePartition(sds, ngroup=9)
-
+  
   # Create partitions list
   parts <- list(mirCounts=mirCounts, 
                 mirSDs=mirSDs,
                 mirChromo=mirChromo,
                 mirRegion=mirRegion)
-
+  
   # Optimize model with partitions
   grro <- grridge(highdimdata=mirDat, 
                   response=as.factor(!ctrlIndex), 
@@ -30,7 +37,18 @@ if(!"grLambdas" %in% ls()) {
                   innfold=5,
                   trace=TRUE)
   
+  # Get glmnet formulated optimal L2 
+  cvSets <- getCvSets(y=as.numeric(!ctrlIndex), nsets=10, seed=cvSeed, print=FALSE)
+  cvo <- cv.glmnet(x=t(mirDat), 
+                   y=as.numeric(!ctrlIndex), 
+                   alpha=0, 
+                   family="binomial",
+                   foldid=cvSets)
+
   # Create and save list with partitions data
-  grLambdas <- list(groupweights=grro$lambdamults, combined=grro$lambdamultvec[, "GroupRegul"])
+  grLambdas <- list(GRridgeL2=grro$optl,
+                    glmnetL2=cvo$lambda.min,
+                    groupweights=grro$lambdamults, 
+                    combined=grro$lambdamultvec[, "GroupRegul"])
   save(grLambdas, file="Rdata/grLambdas.Rdata")
 }
