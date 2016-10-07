@@ -1,0 +1,40 @@
+whichSel <- function(x, y, L2, len=1000, w=rep(1, nrow(x)), penalty.factor=rep(1, ncol(x)), family="binomial"){
+  if(!is.null(L2)){
+    alpha <- seq(0.00000001, 0.99999999, length=1000)
+    grid <- cbind(L2*2/(1 - alpha), alpha)
+    lower <- 1
+    upper <- nrow(grid)
+    SUCCESS <- FALSE
+    while(!SUCCESS){
+      i <- round((lower + upper)/2)
+      glmo <- glmnet(x=x, y=y, lambda=grid[i, 1], alpha=grid[i, 2], weights=w, penalty.factor=penalty.factor, family="binomial")
+      nz <- sum(glmo$beta > 0)
+      if(nz > 5){
+        lower <- i
+      }else if(nz < 5){
+        upper <- i
+      }else if(nz == 5){
+        SUCCESS <- TRUE
+        betas <- glmo$beta
+      }
+      if(abs(upper - lower) == 1 & !SUCCESS){
+        alpha <- seq(alpha[lower], alpha[upper], length=100)
+        grid <- cbind(grLambdas$glmnetL2*2/(1 - alpha), alpha)
+        lower <- 1
+        upper <- nrow(grid)    
+      }
+    }
+  }else{
+    nlambda <- 100
+    while(!SUCCESS){
+      glmo <- glmnet(x=x, y=y, alpha=1, nlambda=nlambda, weights=w, penalty.factor=penalty.factor, family=family)
+      index <- which(colSums(glmo$beta > 0) == 5)
+      if(length(index) > 0){
+        SUCCESS <- TRUE
+        betas <- glmo$beta[, index]
+      }
+      nlambda <- nlambda*10
+    }
+  }
+  return(which(betas > 0))
+}
