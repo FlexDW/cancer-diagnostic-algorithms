@@ -1,0 +1,36 @@
+try(load("Rdata/grLambdas.Rdata"))
+if(!"grLambdas" %in% ls()) { 
+  # Annotation partitions
+  mirTable <- unique(mirLookup[, c("miRNA_ID", "chromosome", "region")])
+  mirIndex <- match(mirs, mirTable$miRNA_ID)
+  mirRegion <- split(1:length(mirs), mirLookup$region[mirIndex])
+  mirRegion <- mirRegion[lapply(mirRegion, length) > 5]
+  mirChromo <- split(1:length(mirs), mirLookup$chromosome[mirIndex])
+  mirChromo <- mirChromo[lapply(mirChromo, length) > 5]
+
+  # Distributional partitions
+  mirNorm <- sweep(mirRaw, 2, mirNF, "/")
+  means <- rowMeans(mirNorm)
+  sds <- apply(mirNorm, 1, sd)
+  rm(mirNorm)
+  mirCounts <- CreatePartition(means, ngroup=8)
+  mirSDs <- CreatePartition(sds, ngroup=9)
+
+  # Create partitions list
+  parts <- list(mirCounts=mirCounts, 
+                mirSDs=mirSDs,
+                mirChromo=mirChromo,
+                mirRegion=mirRegion)
+
+  # Optimize model with partitions
+  grro <- grridge(highdimdata=mirDat, 
+                  response=as.factor(!ctrlIndex), 
+                  partitions=parts, 
+                  monotone=c(TRUE, TRUE, FALSE, FALSE),
+                  innfold=5,
+                  trace=TRUE)
+  
+  # Create and save list with partitions data
+  grLambdas <- list(L2=grro$optl, grWeights=grro$lambdamults, combined=grro$lambdamultvec[, "GroupRegul"])
+  save(grLambdas, file="Rdata/grLambdas.Rdata")
+}
