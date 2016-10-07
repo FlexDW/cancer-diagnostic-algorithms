@@ -31,6 +31,6 @@ if(!"grLambdas" %in% ls()) {
                   trace=TRUE)
   
   # Create and save list with partitions data
-  grLambdas <- list(L2=grro$optl, grWeights=grro$lambdamults, combined=grro$lambdamultvec[, "GroupRegul"])
+  grLambdas <- list(groupweights=grro$lambdamults, combined=grro$lambdamultvec[, "GroupRegul"])
   save(grLambdas, file="Rdata/grLambdas.Rdata")
 }
