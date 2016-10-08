@@ -32,7 +32,7 @@ whichSel <- function(x, y, nvars, L2, len=1000, w=rep(1, nrow(x)), penalty.facto
       index <- which(colSums(glmo$beta > 0) == nvars)
       if(length(index) > 0){
         SUCCESS <- TRUE
-        betas <- glmo$beta[, index]
+        betas <- glmo$beta[, index[1]]
       }
       nlambda <- nlambda*10
     }
