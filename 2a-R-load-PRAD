@@ -1,14 +1,11 @@
 # !NOTE: edgeR needs to be installed
 
-# First include path variable to the data and the label of the data set to be loaded, i.e.:
-# dataPath <- ".../Data"
-# datalabel <- "PRAD"
+# First include path variable to the data and mirLookup table, i.e.:
+# PRAD_data_path <- ".../Data"
 
-# load files (include more if multiple to be loaded) 
-# assumes file loaded still transposed (i.e. features as rows and samples as columns)
-fname <- paste(dataPath, "/", datalabel, "_counts_transp.txt", sep="") 
-isoDat <- isoRaw <- read.table(fname, header=TRUE, row.names=1)
-mirLookup <- read.table(paste(dataPath, "mirLookup.txt", sep="/"), stringsAsFactors=F, header=T)
+# assumes file loaded is transposed (i.e. features as rows and samples as columns)
+isoDat <- isoRaw <- read.table(paste(PRAD_data_path, "PRAD_counts_transp.txt", sep="/"), header=TRUE, row.names=1)
+mirLookup <- read.table(paste(PRAD_data_path, "mirLookup.txt", sep="/"), stringsAsFactors=F, header=T)
 
 # obtain labels from data set
 isomirs <- rownames(isoDat)
