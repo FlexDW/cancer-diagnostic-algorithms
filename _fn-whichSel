@@ -1,4 +1,4 @@
-whichSel <- function(x, y, L2, len=1000, w=rep(1, nrow(x)), penalty.factor=rep(1, ncol(x)), family="binomial"){
+whichSel <- function(x, y, nvars, L2, len=1000, w=rep(1, nrow(x)), penalty.factor=rep(1, ncol(x)), family="binomial"){
   if(!is.null(L2)){
     alpha <- seq(0.00000001, 0.99999999, length=1000)
     grid <- cbind(L2*2/(1 - alpha), alpha)
@@ -9,11 +9,11 @@ whichSel <- function(x, y, L2, len=1000, w=rep(1, nrow(x)), penalty.factor=rep(1
       i <- round((lower + upper)/2)
       glmo <- glmnet(x=x, y=y, lambda=grid[i, 1], alpha=grid[i, 2], weights=w, penalty.factor=penalty.factor, family="binomial")
       nz <- sum(glmo$beta > 0)
-      if(nz > 5){
+      if(nz > nvars){
         lower <- i
-      }else if(nz < 5){
+      }else if(nz < nvars){
         upper <- i
-      }else if(nz == 5){
+      }else if(nz == nvars){
         SUCCESS <- TRUE
         betas <- glmo$beta
       }
@@ -29,7 +29,7 @@ whichSel <- function(x, y, L2, len=1000, w=rep(1, nrow(x)), penalty.factor=rep(1
     SUCCESS <- FALSE
     while(!SUCCESS){
       glmo <- glmnet(x=x, y=y, alpha=1, nlambda=nlambda, weights=w, penalty.factor=penalty.factor, family=family)
-      index <- which(colSums(glmo$beta > 0) == 5)
+      index <- which(colSums(glmo$beta > 0) == nvars)
       if(length(index) > 0){
         SUCCESS <- TRUE
         betas <- glmo$beta[, index]
