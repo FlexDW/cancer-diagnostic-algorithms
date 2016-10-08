@@ -19,21 +19,19 @@ mirSDs <- CreatePartition(sds, ngroup=6)
 
 # Create partitions list
 parts <- list(mirCounts=mirCounts, 
-              mirSDs=mirSDs) #,
-#               mirChromo=mirChromo,
-#               mirRegion=mirRegion)
+              mirSDs=mirSDs,
+              mirChromo=mirChromo,
+              mirRegion=mirRegion)
 
 # Optimize model with partitions
 grro <- grridge(highdimdata=PRAD$mirDat, 
                 response=as.factor(!PRAD$ctrlIndex), 
                 partitions=parts, 
-                monotone=c(TRUE, TRUE), #, FALSE, FALSE),
-                maxsel=5,
-                compareEN=TRUE,
+                monotone=c(TRUE, TRUE, FALSE, FALSE),
                 innfold=5,
                 trace=TRUE)
 
 # Add values to list and remove old objects
 PRAD$lambdamults=grro$lambdamults
 PRAD$lambdamultvec=grro$lambdamultvec[, "GroupRegul"]
-rm(mirTable, mirIndex, mirRegion, mirChromo, mirNorm, means, sds, mirCounts, mirSDs, parts)
+rm(mirTable, mirIndex, mirRegion, mirChromo, mirNorm, means, sds, mirCounts, mirSDs, parts, grro)
