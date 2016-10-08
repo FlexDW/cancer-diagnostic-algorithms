@@ -1,11 +1,11 @@
 # !NOTE: edgeR needs to be installed
 
 # First include path variable to the data and mirLookup table, i.e.:
-# PRAD_data_path <- ".../Data"
+# PCBL_data_path <- ".../Data"
 
 # assumes file loaded is transposed (i.e. features as rows and samples as columns)
-isoDat <- isoRaw <- read.table(paste(PRAD_data_path, "PRAD_counts_transp.txt", sep="/"), header=TRUE, row.names=1)
-mirLookup <- read.table(paste(PRAD_data_path, "mirLookup.txt", sep="/"), stringsAsFactors=F, header=T)
+isoDat <- isoRaw <- read.table(paste(PCBL_data_path, "PCBL_counts_transp.txt", sep="/"), header=TRUE, row.names=1)
+mirLookup <- read.table(paste(PCBL_data_path, "mirLookup.txt", sep="/"), stringsAsFactors=F, header=T)
 
 # obtain labels from data set
 isomirs <- rownames(isoDat)
@@ -20,8 +20,8 @@ mirDat <- mirRaw <- t(sapply(splitIsoDat, colSums))
 mirs <- rownames(mirDat)
 
 # extract patientID and control group flag from barcodes
-PID <- substr(barcodes, 1, 12) # Currently, uniqe patientID is first 12 characters of barcode
-ctrlIndex <- substr(barcodes, 14, 14) == "1" # Currently this is where the control flag is in TCGA barcodes
+PID <- substr(barcodes, 1, 10)
+ctrlIndex <- substr(barcodes, 12, 12) == "H"
 
 # Define control and tumor sets
 # (most patients are in both groups so we define based on a matched control sample existing)
@@ -70,5 +70,5 @@ isoDat <- t(scale(t(isoDat)))
 mirDat <- t(scale(t(mirDat)))
 
 # remove unused
-rm(fname, idx, splitIsoDat, setIndex, mirIndex, isomirIndex, g)
+rm(idx, splitIsoDat, setIndex, mirIndex, isomirIndex, g)
 # save(isoDat, mirLookup, isomirs, barcodes, mirs, mirDat, PID, ctrlIndex, ctrlPID, tmrPID, isoRaw, mirRaw, isoLibSize, isoRelLibSize, isoNF, mirLibSize, mirRelLibSize, mirNF, file="Rdata\load_data.Rdata")
