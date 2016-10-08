@@ -32,6 +32,6 @@ grro <- grridge(highdimdata=mirDat,
                 trace=TRUE)
 
 # Add values to list and remove old objects
-PRAD$lambdamults=grro$lambdamults,
+PRAD$lambdamults=grro$lambdamults
 PRAD$lambdamultvec=grro$lambdamultvec[, "GroupRegul"])
 rm(mirTable, mirIndex, mirRegion, mirChromo, mirNorm, means, sds, mirCounts, mirSDs, parts, grro)
