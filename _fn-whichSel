@@ -26,6 +26,7 @@ whichSel <- function(x, y, L2, len=1000, w=rep(1, nrow(x)), penalty.factor=rep(1
     }
   }else{
     nlambda <- 100
+    SUCCESS <- FALSE
     while(!SUCCESS){
       glmo <- glmnet(x=x, y=y, alpha=1, nlambda=nlambda, weights=w, penalty.factor=penalty.factor, family=family)
       index <- which(colSums(glmo$beta > 0) == 5)
