@@ -1,5 +1,4 @@
 # !NOTE: edgeR needs to be installed
-
 # First include path variable to the data and mirLookup table, i.e.:
 # PRAD_data_path <- ".../Data"
 
@@ -69,7 +68,24 @@ mirDat <- g(mirDat)
 isoDat <- t(scale(t(isoDat)))
 mirDat <- t(scale(t(mirDat)))
 
-# remove unused
-rm(fname, idx, splitIsoDat, setIndex, mirIndex, isomirIndex, g)
-# save(isoDat, mirLookup, isomirs, barcodes, mirs, mirDat, PID, ctrlIndex, ctrlPID, tmrPID, isoRaw, mirRaw, isoLibSize, isoRelLibSize, isoNF, mirLibSize, mirRelLibSize, mirNF, file="Rdata\load_data.Rdata")
+# create list and remove old objects
+PRAD <- list(isoDat=isoDat, 
+             mirLookup=mirLookup, 
+             isomirs=isomirs, 
+             barcodes=barcodes, 
+             mirs=mirs, 
+             mirDat=mirDat, 
+             PID=PID, 
+             ctrlIndex=ctrlIndex, 
+             ctrlPID=ctrlPID, 
+             tmrPID=tmrPID, 
+             isoRaw=isoRaw, 
+             mirRaw=mirRaw, 
+             isoLibSize=isoLibSize, 
+             isoRelLibSize=isoRelLibSize, 
+             isoNF=isoNF, 
+             mirLibSize=mirLibSize, 
+             mirRelLibSize=mirRelLibSize, 
+             mirNF=mirNF)
 
+rm(idx, splitIsoDat, setIndex, mirIndex, isomirIndex, g, isoDat, mirLookup, isomirs, barcodes, mirs, mirDat, PID, ctrlIndex, ctrlPID, tmrPID, isoRaw, mirRaw, isoLibSize, isoRelLibSize, isoNF, mirLibSize, mirRelLibSize, mirNF, file="Rdata\load_data.Rdata")
