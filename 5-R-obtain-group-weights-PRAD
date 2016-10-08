@@ -11,7 +11,7 @@ mirChromo <- split(1:length(PRAD$mirs), PRAD$mirLookup$chromosome[mirIndex])
 mirChromo <- mirChromo[lapply(mirChromo, length) > 20]
 
 # Distributional partitions
-mirNorm <- sweep(PRAD$mirRaw, 2, mirNF, "/")
+mirNorm <- sweep(PRAD$mirRaw, 2, PRAD$mirNF, "/")
 means <- rowMeans(mirNorm)
 sds <- apply(mirNorm, 1, sd)
 mirCounts <- CreatePartition(means, ngroup=6)
@@ -24,8 +24,8 @@ parts <- list(mirCounts=mirCounts,
               mirRegion=mirRegion)
 
 # Optimize model with partitions
-grro <- grridge(highdimdata=mirDat, 
-                response=as.factor(!ctrlIndex), 
+grro <- grridge(highdimdata=PRAD$mirDat, 
+                response=as.factor(!PRAD$ctrlIndex), 
                 partitions=parts, 
                 monotone=c(TRUE, TRUE, FALSE, FALSE),
                 innfold=5,
