@@ -28,6 +28,8 @@ grro <- grridge(highdimdata=PRAD$mirDat,
                 response=as.factor(!PRAD$ctrlIndex), 
                 partitions=parts, 
                 monotone=c(TRUE, TRUE), #, FALSE, FALSE),
+                maxsel=5,
+                compareEN=TRUE,
                 innfold=5,
                 trace=TRUE)
 
