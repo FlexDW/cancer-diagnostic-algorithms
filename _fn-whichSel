@@ -19,7 +19,7 @@ whichSel <- function(x, y, nvars, L2, len=1000, w=rep(1, nrow(x)), penalty.facto
       }
       if(abs(upper - lower) == 1 & !SUCCESS){
         alpha <- seq(alpha[lower], alpha[upper], length=100)
-        grid <- cbind(grLambdas$glmnetL2*2/(1 - alpha), alpha)
+        grid <- cbind(L2*2/(1 - alpha), alpha)
         lower <- 1
         upper <- nrow(grid)    
       }
