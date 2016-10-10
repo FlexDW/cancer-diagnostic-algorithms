@@ -2,7 +2,7 @@
 # - grro: GRridge object
 
 # Annotation partitions
-mirTable <- unique(PCBL$mirLookup[, c("miRNA_ID", "chromosome", "region")])
+mirTable <- unique(PCBL$mirLookup[, c("miRNA_ID", "chromosome")])
 mirIndex <- match(PCBL$mirs, mirTable$miRNA_ID)
 mirChromo <- split(1:length(PCBL$mirs), PCBL$mirLookup$chromosome[mirIndex])
 mirChromo <- mirChromo[lapply(mirChromo, length) > 20]
@@ -17,7 +17,7 @@ mirSDs <- CreatePartition(sds, ngroup=6)
 # Create partitions list
 parts <- list(mirCounts=mirCounts, 
               mirSDs=mirSDs,
-              mirRegion=mirRegion)
+              mirChromo=mirChromo)
 
 # Optimize model with partitions
 grro <- grridge(highdimdata=PCBL$mirDat, 
