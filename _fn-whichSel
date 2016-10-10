@@ -26,8 +26,7 @@ whichSel <- function(x, y, nvars, L2, len=1000, w=rep(1, nrow(x)), penalty.facto
     }
   }else{
     count <- 0
-    glmo <- glmnet(x=X, y=Y, alpha=1, family=family, weights=w, penalty.factor=penalty.factor)
-    colSums(glmo$beta > 0)
+    glmo <- glmnet(x=x, y=y, alpha=1, family=family, weights=w, penalty.factor=penalty.factor)
     L1 <- seq(0, max(glmo$lambda), length=1000)
     lower <- 1
     upper <- length(L1)    
