@@ -26,10 +26,13 @@ parts <- list(mirCounts=mirCounts,
 grro <- grridge(highdimdata=PRAD$mirDat, 
                 response=as.factor(!PRAD$ctrlIndex), 
                 partitions=parts, 
+                optl=optl.PRAD,
                 monotone=c(TRUE, TRUE, FALSE, FALSE),
                 innfold=5,
+                compareEN=TRUE,
+                maxsel=5,
                 trace=TRUE)
 
 # Add values to list and remove old objects
-PRAD$grro=grro
+PRAD$grro <- grro
 rm(mirTable, mirIndex, mirRegion, mirChromo, mirNorm, means, sds, mirCounts, mirSDs, parts)
