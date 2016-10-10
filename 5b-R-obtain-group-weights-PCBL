@@ -1,32 +1,47 @@
 # Object added to list:
 # - grro: GRridge object
-
-# Annotation partitions
-mirTable <- unique(PCBL$mirLookup[, c("miRNA_ID", "chromosome")])
-mirIndex <- match(PCBL$mirs, mirTable$miRNA_ID)
-mirChromo <- split(1:length(PCBL$mirs), PCBL$mirLookup$chromosome[mirIndex])
-mirChromo <- mirChromo[lapply(mirChromo, length) > 20]
+source("https://raw.githubusercontent.com/felixthecat000/code_share/master/grridge.R")
 
 # Distributional partitions
 mirNorm <- sweep(PCBL$mirRaw, 2, PCBL$mirNF, "/")
 means <- rowMeans(mirNorm)
 sds <- apply(mirNorm, 1, sd)
-mirCounts <- CreatePartition(means, ngroup=6)
-mirSDs <- CreatePartition(sds, ngroup=6)
+mirCounts <- CreatePartition(means, ngroup=8)
+mirSDs <- CreatePartition(sds, ngroup=8)
+
+# Tissue betas
+cvo <- cv.glmnet(x=t(PRAD$mirDat), 
+                 y=as.numeric(!PRAD$ctrlIndex), 
+                 alpha=0, 
+                 family="binomial", 
+                 foldid=getCvSets(y=!PRAD$ctrlIndex, nsets=3, seed=cvSeed, print=FALSE))
+betas <- glmnet(x=t(PRAD$mirDat), 
+                y=as.numeric(!PRAD$ctrlIndex), 
+                alpha=0, 
+                lambda=cvo$lambda.min,
+                family="binomial")$beta
+matched.betas <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), beta=as.vector(betas))
+matched.betas <- matched.betas[complete.cases(matched.betas), ]
+betaParts <- CreatePartition(matched.betas$beta, ngroup=5)
+betaParts <- lapply(betaParts, function(x) matched.betas[x, 1])
 
 # Create partitions list
-parts <- list(mirCounts=mirCounts, 
-              mirSDs=mirSDs,
-              mirChromo=mirChromo)
+parts <- list(mirBetas=betaParts,
+              mirCounts=mirCounts, 
+              mirSDs=mirSDs)
 
 # Optimize model with partitions
 grro <- grridge(highdimdata=PCBL$mirDat, 
                 response=as.factor(!PCBL$ctrlIndex), 
-                partitions=parts, 
-                monotone=c(TRUE, TRUE, FALSE, FALSE),
-                innfold=5,
+                partitions=parts,
+                optl=optl.PCBL,
+                monotone=c(TRUE, TRUE, TRUE),
+                selection=TRUE,
+                compareEN=TRUE,
+                maxsel=5,
+                innfold=3,
                 trace=TRUE)
 
 # Add values to list and remove old objects
-PCBL$grro=grro
-rm(mirTable, mirIndex, mirChromo, mirNorm, means, sds, mirCounts, mirSDs, parts)
+PCBL$grro <- grro
+rm(mirNorm, means, sds, mirCounts, mirSDs, cvo, betas, matched.betas, betaParts, parts, grro)
