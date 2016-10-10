@@ -2,10 +2,8 @@
 # - grro: GRridge object
 
 # Annotation partitions
-mirTable <- unique(PRAD$mirLookup[, c("miRNA_ID", "chromosome", "region")])
+mirTable <- unique(PRAD$mirLookup[, c("miRNA_ID", "chromosome")])
 mirIndex <- match(PRAD$mirs, mirTable$miRNA_ID)
-mirRegion <- split(1:length(PRAD$mirs), PRAD$mirLookup$region[mirIndex])
-mirRegion <- mirRegion[lapply(mirRegion, length) > 20]
 mirChromo <- split(1:length(PRAD$mirs), PRAD$mirLookup$chromosome[mirIndex])
 mirChromo <- mirChromo[lapply(mirChromo, length) > 20]
 
@@ -19,8 +17,7 @@ mirSDs <- CreatePartition(sds, ngroup=6)
 # Create partitions list
 parts <- list(mirCounts=mirCounts, 
               mirSDs=mirSDs,
-              mirChromo=mirChromo,
-              mirRegion=mirRegion)
+              mirChromo=mirChromo)
 
 # Optimize model with partitions
 grro <- grridge(highdimdata=PRAD$mirDat, 
@@ -35,4 +32,4 @@ grro <- grridge(highdimdata=PRAD$mirDat,
 
 # Add values to list and remove old objects
 PRAD$grro <- grro
-rm(mirTable, mirIndex, mirRegion, mirChromo, mirNorm, means, sds, mirCounts, mirSDs, parts)
+rm(mirTable, mirIndex, mirChromo, mirNorm, means, sds, mirCounts, mirSDs, parts, grro)
