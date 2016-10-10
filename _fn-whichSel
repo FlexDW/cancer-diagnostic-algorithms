@@ -25,16 +25,35 @@ whichSel <- function(x, y, nvars, L2, len=1000, w=rep(1, nrow(x)), penalty.facto
       }
     }
   }else{
-    nlambda <- 100
+    count <- 0
+    glmo <- glmnet(x=X, y=Y, alpha=1, family=family, weights=w, penalty.factor=penalty.factor)
+    colSums(glmo$beta > 0)
+    L1 <- seq(0, max(glmo$lambda), length=1000)
+    lower <- 1
+    upper <- length(L1)    
     SUCCESS <- FALSE
     while(!SUCCESS){
-      glmo <- glmnet(x=x, y=y, alpha=1, nlambda=nlambda, weights=w, penalty.factor=penalty.factor, family=family)
-      index <- which(colSums(glmo$beta > 0) == nvars)
-      if(length(index) > 0){
+      i <- round((lower + upper)/2)
+      glmo <- glmnet(x=x, y=y, alpha=1, lambda=L1[i], family=family, weights=w, penalty.factor=penalty.factor)
+      nz <- sum(glmo$beta > 0)
+      if(nz > nvars){
+        lower <- i
+      }else if(nz < nvars){
+        upper <- i
+      }else if(nz == nvars){
         SUCCESS <- TRUE
-        betas <- glmo$beta[, index[1]]
+        betas <- glmo$beta
+      }      
+      if(abs(upper - lower) == 1 & !SUCCESS){
+        count <- count + 1
+        L1 <- seq(L1[lower], L1[upper], length.out=1000)
+        lower <- 1
+        upper <- length(L1)    
       }
-      nlambda <- nlambda*10
+      if(count > 100){
+        SUCCESS <- TRUE
+        betas <- glmo$beta
+      }
     }
   }
   return(which(betas > 0))
