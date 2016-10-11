@@ -10,7 +10,7 @@ require(GRridge)
 source("https://raw.githubusercontent.com/felixthecat000/code_share/master/grridge.R")
 
 # general functions from other repositories
-source("https://raw.githubusercontent.com/FlexDW/random/master/fn_string_concat")
+source("https://raw.githubusercontent.com/FlexDW/random/master/fn_string_concat.R")
 source("https://raw.githubusercontent.com/FlexDW/classification-model-evaluation/master/fn-getCvSets")
 source("https://raw.githubusercontent.com/FlexDW/classification-model-evaluation/master/fn-sensitivity-specificity")
 
