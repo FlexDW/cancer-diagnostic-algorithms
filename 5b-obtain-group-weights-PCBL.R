@@ -5,6 +5,9 @@
 # Object added to PCBL list:
 # - grro: GRridge object
 
+# Cleanup:
+# - move optl, nvars to PCBL list
+
 # Distributional partitions
 mirNorm <- sweep(PCBL$mirRaw, 2, PCBL$mirNF, "/")
 means <- rowMeans(mirNorm)
@@ -36,6 +39,7 @@ parts2 <- list(mirCounts=mirCounts)
 
 # Optimize model with partitions
 if(!"optl.PCBL" %in% ls()) optl.PCBL <- NULL
+if(!"nvars.PCBL" %in% ls()) nvars.PCBL <- 5
 grro1 <- grridge(highdimdata=PCBL$mirDat, 
                  response=as.factor(!PCBL$ctrlIndex), 
                  partitions=parts1,
