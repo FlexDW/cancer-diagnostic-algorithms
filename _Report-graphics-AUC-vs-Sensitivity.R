@@ -1,3 +1,7 @@
+# Image names:
+# - Diagrams/AUC_vs_Sensitivity.png
+# - Diagrams/AUC_vs_Sensitivity_ROC_comparison.png
+# - Diagrams/example_ROC_curve.png
 
 png(filename="Diagrams/example_ROC_curve.png", width=400, height=400)
 p <- c(runif(300)^4, runif(700)^(1/2))
