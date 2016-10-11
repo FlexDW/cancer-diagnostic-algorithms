@@ -31,6 +31,7 @@ parts <- list(mirBetas=betaParts,
               mirSDs=mirSDs)
 
 # Optimize model with partitions
+if(!"optl.PCBL" %in% ls()) optl.PCBL <- NULL
 grro <- grridge(highdimdata=PCBL$mirDat, 
                 response=as.factor(!PCBL$ctrlIndex), 
                 partitions=parts,
