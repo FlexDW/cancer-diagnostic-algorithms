@@ -25,6 +25,7 @@ parts <- list(mirCounts=mirCounts,
 
 # Optimize model with partitions
 if(!"optl.PRAD" %in% ls()) optl.PRAD <- NULL
+if(!"nvars.PRAD" %in% ls()) nvars.PRAD <- 5
 grro <- grridge(highdimdata=PRAD$mirDat, 
                 response=as.factor(!PRAD$ctrlIndex), 
                 partitions=parts, 
