@@ -1,5 +1,9 @@
-require(glmnet)
-require(MASS)
+# Creates images:
+# - Diagrams/trivial_example_unequal_COV.png
+# - Diagrams/trivial_example_unbalanced.png
+# - Diagrams/unbalanced_regularization_path.png
+# - Diagrams/weighted_regularization_path.png
+# - Diagrams/trivial_example_marginals.png
 
 set.seed(28920)
 
