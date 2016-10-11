@@ -29,23 +29,35 @@ betaParts <- CreatePartition(matched.betas$beta, ngroup=5)
 betaParts <- lapply(betaParts, function(x) matched.betas[x, 1])
 
 # Create partitions list
-parts <- list(mirBetas=betaParts,
-              mirCounts=mirCounts, 
-              mirSDs=mirSDs)
+parts1 <- list(mirBetas=betaParts,
+               mirCounts=mirCounts)
+
+parts2 <- list(mirCounts=mirCounts)
 
 # Optimize model with partitions
 if(!"optl.PCBL" %in% ls()) optl.PCBL <- NULL
-grro <- grridge(highdimdata=PCBL$mirDat, 
-                response=as.factor(!PCBL$ctrlIndex), 
-                partitions=parts,
-                optl=optl.PCBL,
-                monotone=c(TRUE, TRUE, TRUE),
-                selection=TRUE,
-                compareEN=TRUE,
-                maxsel=nvars.PCBL,
-                innfold=3,
-                trace=TRUE)
+grro1 <- grridge(highdimdata=PCBL$mirDat, 
+                 response=as.factor(!PCBL$ctrlIndex), 
+                 partitions=parts1,
+                 optl=optl.PCBL,
+                 monotone=c(TRUE, TRUE),
+                 compareEN=TRUE,
+                 maxsel=nvars.PCBL,
+                 innfold=3,
+                 trace=TRUE)
+
+optl.PCBL <- grro1$optl
+grro2 <- grridge(highdimdata=PCBL$mirDat, 
+                 response=as.factor(!PCBL$ctrlIndex), 
+                 partitions=parts2,
+                 optl=optl.PCBL,
+                 monotone=TRUE,
+                 compareEN=TRUE,
+                 maxsel=nvars.PCBL,
+                 innfold=3,
+                 trace=TRUE)
 
 # Add values to list and remove old objects
-PCBL$grro <- grro
-rm(mirNorm, means, sds, mirCounts, mirSDs, cvo, betas, matched.betas, betaParts, parts, grro)
+PCBL$grro1 <- grro1
+PCBL$grro2 <- grro2
+rm(mirNorm, means, sds, mirCounts, mirSDs, cvo, betas, matched.betas, betaParts, parts1, parts2, grro1, grro2)
