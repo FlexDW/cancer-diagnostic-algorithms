@@ -1,6 +1,5 @@
 # Object added to list:
 # - grro: GRridge object
-source("https://raw.githubusercontent.com/felixthecat000/code_share/master/grridge.R")
 
 # Distributional partitions
 mirNorm <- sweep(PCBL$mirRaw, 2, PCBL$mirNF, "/")
