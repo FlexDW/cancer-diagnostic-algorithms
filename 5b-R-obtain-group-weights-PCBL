@@ -1,4 +1,8 @@
-# Object added to list:
+# Requires
+# - PCBL: data list
+# - nvars.PCBL set: number of variables selected
+# - (optl.PCBL): optional for speedup
+# Object added to PCBL list:
 # - grro: GRridge object
 
 # Distributional partitions
@@ -38,7 +42,7 @@ grro <- grridge(highdimdata=PCBL$mirDat,
                 monotone=c(TRUE, TRUE, TRUE),
                 selection=TRUE,
                 compareEN=TRUE,
-                maxsel=5,
+                maxsel=nvars.PCBL,
                 innfold=3,
                 trace=TRUE)
 
