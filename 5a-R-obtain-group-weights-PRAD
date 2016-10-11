@@ -1,4 +1,8 @@
-# Object added to list:
+# Requires
+# - PRAD: data list
+# - nvars set: number of variables selected
+# - (optl.PRAD): optional for speedup
+# Object added to PRAD list:
 # - grro: GRridge object
 
 # Annotation partitions
@@ -28,7 +32,7 @@ grro <- grridge(highdimdata=PRAD$mirDat,
                 monotone=c(TRUE, TRUE, FALSE),
                 innfold=5,
                 compareEN=TRUE,
-                maxsel=5,
+                maxsel=nvars,
                 trace=TRUE)
 
 # Add values to list and remove old objects
