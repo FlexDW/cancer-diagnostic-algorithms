@@ -1,6 +1,6 @@
 # Requires
 # - PRAD: data list
-# - nvars set: number of variables selected
+# - nvars.PRAD set: number of variables selected
 # - (optl.PRAD): optional for speedup
 # Object added to PRAD list:
 # - grro: GRridge object
@@ -32,7 +32,7 @@ grro <- grridge(highdimdata=PRAD$mirDat,
                 monotone=c(TRUE, TRUE, FALSE),
                 innfold=5,
                 compareEN=TRUE,
-                maxsel=nvars,
+                maxsel=nvars.PRAD,
                 trace=TRUE)
 
 # Add values to list and remove old objects
