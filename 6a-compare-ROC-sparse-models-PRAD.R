@@ -68,3 +68,5 @@ legend("bottomright", cex=0.7, lty=1,
        col=cols[c("ridge", "EN", "lasso", "GREN")],
        title="AUC, Sensitivity at specificity=0.9")
 dev.off()
+
+# rm(cols, X, Y, cvSets, cvo, L2, p.ridge, auc.ridge, roc.ridge, sens.ridge, vars.EN, p.EN, auc.EN, roc.EN, sens.EN, vars.lasso, p.lasso, auc.lasso, roc.lasso, sens.lasso, vars.GREN, p.GREN, auc.GREN, roc.GREN, sens.GREN, legtext)
