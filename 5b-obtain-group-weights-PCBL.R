@@ -48,7 +48,7 @@ grro1 <- grridge(highdimdata=PCBL$mirDat,
                  compareEN=TRUE,
                  maxsel=nvars.PCBL,
                  innfold=3,
-                 trace=TRUE)
+                 trace=FALSE)
 
 optl.PCBL <- grro1$optl
 grro2 <- grridge(highdimdata=PCBL$mirDat, 
@@ -59,7 +59,7 @@ grro2 <- grridge(highdimdata=PCBL$mirDat,
                  compareEN=TRUE,
                  maxsel=nvars.PCBL,
                  innfold=3,
-                 trace=TRUE)
+                 trace=FALSE)
 
 # Add values to list and remove old objects
 PCBL$grro1 <- grro1
