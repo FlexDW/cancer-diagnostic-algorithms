@@ -1,3 +1,8 @@
+# update GRridge::grridge function for:
+# - Elastic Net search boundary increase to 1000 times L2
+# - Replace printed warning and error messages with warning() and stop() 
+# - Change remaining printing to if(trace) print...
+
 grridge <- function(highdimdata, response, partitions, unpenal = ~1, offset = NULL, 
                     method = "exactstable", niter = 10, monotone = NULL, optl = NULL, 
                     innfold = NULL, fixedfoldsinn = TRUE, selection = FALSE, 
@@ -342,7 +347,7 @@ grridge <- function(highdimdata, response, partitions, unpenal = ~1, offset = NU
           leftsrancen <- t(t(leftsran) - means)
           relerror <- sum(abs(leftsrancen))/(nlefts * 
                                                sum(abs(means)))
-          if (cl == 1 & i == 1) print(cvln0)
+          if (cl == 1 & i == 1) if(trace) print(cvln0)
           if(trace) print(paste("Relative error:", relerror))
           if (relerror >= 0.1) warning("WARNING: large relative error (>=0.1). Consider using larger groups of variable.")
           nadd <- ncol(XMW) - ncol(XMw0)
