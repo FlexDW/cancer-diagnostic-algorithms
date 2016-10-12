@@ -12,8 +12,7 @@
 mirNorm <- sweep(PCBL$mirRaw, 2, PCBL$mirNF, "/")
 means <- rowMeans(mirNorm)
 sds <- apply(mirNorm, 1, sd)
-mirCounts <- CreatePartition(means, ngroup=8)
-mirSDs <- CreatePartition(sds, ngroup=8)
+capture.output(mirCounts <- CreatePartition(means, ngroup=8), file="GRridge_out/out.txt", append=TRUE)
 
 # Tissue betas
 cvo <- cv.glmnet(x=t(PRAD$mirDat), 
@@ -40,26 +39,26 @@ parts2 <- list(mirCounts=mirCounts)
 # Optimize model with partitions
 if(!"optl.PCBL" %in% ls()) optl.PCBL <- NULL
 if(!"nvars.PCBL" %in% ls()) nvars.PCBL <- 5
-grro1 <- grridge(highdimdata=PCBL$mirDat, 
-                 response=as.factor(!PCBL$ctrlIndex), 
-                 partitions=parts1,
-                 optl=optl.PCBL,
-                 monotone=c(TRUE, TRUE),
-                 compareEN=TRUE,
-                 maxsel=nvars.PCBL,
-                 innfold=3,
-                 trace=FALSE)
+capture.output(grro1 <- grridge(highdimdata=PCBL$mirDat, 
+                                response=as.factor(!PCBL$ctrlIndex), 
+                                partitions=parts1,
+                                optl=optl.PCBL,
+                                monotone=c(TRUE, TRUE),
+                                compareEN=TRUE,
+                                maxsel=nvars.PCBL,
+                                innfold=3,
+                                trace=FALSE), file="GRridge_out/out.txt", append=TRUE)
 
 optl.PCBL <- grro1$optl
-grro2 <- grridge(highdimdata=PCBL$mirDat, 
-                 response=as.factor(!PCBL$ctrlIndex), 
-                 partitions=parts2,
-                 optl=optl.PCBL,
-                 monotone=TRUE,
-                 compareEN=TRUE,
-                 maxsel=nvars.PCBL,
-                 innfold=3,
-                 trace=FALSE)
+capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat, 
+                                response=as.factor(!PCBL$ctrlIndex), 
+                                partitions=parts2,
+                                optl=optl.PCBL,
+                                monotone=TRUE,
+                                compareEN=TRUE,
+                                maxsel=nvars.PCBL,
+                                innfold=3,
+                                trace=FALSE), file="GRridge_out/out.txt", append=TRUE)
 
 # Add values to list and remove old objects
 PCBL$grro1 <- grro1
