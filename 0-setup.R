@@ -7,7 +7,7 @@ require(MASS)
 require(GRridge)
 
 # package overwrites
-source("https://raw.githubusercontent.com/felixthecat000/code_share/master/grridge.R")
+source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/_fn-grridge-update.R")
 
 # general functions from other repositories
 source("https://raw.githubusercontent.com/FlexDW/random/master/fn_string_concat.R")
