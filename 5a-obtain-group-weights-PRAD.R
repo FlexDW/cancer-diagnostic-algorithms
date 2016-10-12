@@ -14,9 +14,7 @@ mirChromo <- mirChromo[lapply(mirChromo, length) > 20]
 # Distributional partitions
 mirNorm <- sweep(PRAD$mirRaw, 2, PRAD$mirNF, "/")
 means <- rowMeans(mirNorm)
-sds <- apply(mirNorm, 1, sd)
-mirCounts <- CreatePartition(means, ngroup=6)
-mirSDs <- CreatePartition(sds, ngroup=6)
+capture.output(mirCounts <- CreatePartition(means, ngroup=6), file="GRridge_out/out.txt", append=FALSE)
 
 # Create partitions list
 parts <- list(mirCounts=mirCounts, 
@@ -25,15 +23,15 @@ parts <- list(mirCounts=mirCounts,
 # Optimize model with partitions
 if(!"optl.PRAD" %in% ls()) optl.PRAD <- NULL
 if(!"nvars.PRAD" %in% ls()) nvars.PRAD <- 5
-grro <- grridge(highdimdata=PRAD$mirDat, 
-                response=as.factor(!PRAD$ctrlIndex), 
-                partitions=parts, 
-                optl=optl.PRAD,
-                monotone=c(TRUE, FALSE),
-                innfold=5,
-                compareEN=TRUE,
-                maxsel=nvars.PRAD,
-                trace=FALSE)
+capture.output(grro <- grridge(highdimdata=PRAD$mirDat, 
+                               response=as.factor(!PRAD$ctrlIndex), 
+                               partitions=parts, 
+                               optl=optl.PRAD,
+                               monotone=c(TRUE, FALSE),
+                               innfold=5,
+                               compareEN=TRUE,
+                               maxsel=nvars.PRAD,
+                               trace=FALSE), file="GRridge_out/out.txt", append=TRUE)
 
 # Add values to list and remove old objects
 PRAD$grro <- grro
