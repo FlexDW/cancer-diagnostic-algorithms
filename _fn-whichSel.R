@@ -1,4 +1,4 @@
-whichSel <- function(x, y, nvars, L2, len=1000, w=rep(1, nrow(x)), penalty.factor=rep(1, ncol(x)), family="binomial"){
+whichSel <- function(x, y, nvars, L2, len=1000, family="binomial", w=rep(1, nrow(x)), penalty.factor=rep(1, ncol(x)), standardize=TRUE){
   if(!is.null(L2)){
     alpha <- seq(0.00000001, 0.99999999, length=1000)
     grid <- cbind(L2*2/(1 - alpha), alpha)
@@ -7,7 +7,7 @@ whichSel <- function(x, y, nvars, L2, len=1000, w=rep(1, nrow(x)), penalty.facto
     SUCCESS <- FALSE
     while(!SUCCESS){
       i <- round((lower + upper)/2)
-      glmo <- glmnet(x=x, y=y, lambda=grid[i, 1], alpha=grid[i, 2], weights=w, penalty.factor=penalty.factor, family="binomial")
+      glmo <- glmnet(x=x, y=y, lambda=grid[i, 1], alpha=grid[i, 2], family="binomial", weights=w, penalty.factor=penalty.factor, standardize=standardize)
       nz <- sum(glmo$beta > 0)
       if(nz > nvars){
         lower <- i
@@ -26,14 +26,14 @@ whichSel <- function(x, y, nvars, L2, len=1000, w=rep(1, nrow(x)), penalty.facto
     }
   }else{
     count <- 0
-    glmo <- glmnet(x=x, y=y, alpha=1, family=family, weights=w, penalty.factor=penalty.factor)
+    glmo <- glmnet(x=x, y=y, alpha=1, family=family, weights=w, penalty.factor=penalty.factor, standardize=standardize)
     L1 <- seq(0, max(glmo$lambda), length=1000)
     lower <- 1
     upper <- length(L1)    
     SUCCESS <- FALSE
     while(!SUCCESS){
       i <- round((lower + upper)/2)
-      glmo <- glmnet(x=x, y=y, alpha=1, lambda=L1[i], family=family, weights=w, penalty.factor=penalty.factor)
+      glmo <- glmnet(x=x, y=y, alpha=1, lambda=L1[i], family=family, weights=w, penalty.factor=penalty.factor, standardize=standardize)
       nz <- sum(glmo$beta > 0)
       if(nz > nvars){
         lower <- i
