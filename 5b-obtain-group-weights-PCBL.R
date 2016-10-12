@@ -27,7 +27,7 @@ betas <- glmnet(x=t(PRAD$mirDat),
                 family="binomial")$beta
 matched.betas <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), beta=as.vector(betas))
 matched.betas <- matched.betas[complete.cases(matched.betas), ]
-betaParts <- CreatePartition(matched.betas$beta, ngroup=5)
+capture.output(betaParts <- CreatePartition(matched.betas$beta, ngroup=5), file="GRridge_out/out.txt", append=TRUE)
 betaParts <- lapply(betaParts, function(x) matched.betas[x, 1])
 
 # Create partitions list
