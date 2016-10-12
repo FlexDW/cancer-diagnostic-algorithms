@@ -20,7 +20,6 @@ mirSDs <- CreatePartition(sds, ngroup=6)
 
 # Create partitions list
 parts <- list(mirCounts=mirCounts, 
-              mirSDs=mirSDs,
               mirChromo=mirChromo)
 
 # Optimize model with partitions
@@ -30,11 +29,11 @@ grro <- grridge(highdimdata=PRAD$mirDat,
                 response=as.factor(!PRAD$ctrlIndex), 
                 partitions=parts, 
                 optl=optl.PRAD,
-                monotone=c(TRUE, TRUE, FALSE),
+                monotone=c(TRUE, FALSE),
                 innfold=5,
                 compareEN=TRUE,
                 maxsel=nvars.PRAD,
-                trace=TRUE)
+                trace=FALSE)
 
 # Add values to list and remove old objects
 PRAD$grro <- grro
