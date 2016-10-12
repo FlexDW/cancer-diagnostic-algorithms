@@ -734,7 +734,7 @@ grridge <- function(highdimdata, response, partitions, unpenal = ~1, offset = NU
               optl = optl, lambdamultvec = almvecall, predobj = predobj, 
               betas = newbeta, whichsel = whichsel, cvlssel = cvlssel, 
               reslasso = reslasso, resEN = resEN, model = model, arguments = arguments, 
-              allpreds = allpreds))
+              allpreds = allpreds, XMw0=XMw0))
 }
 
 assignInNamespace("grridge", grridge, ns="GRridge")
