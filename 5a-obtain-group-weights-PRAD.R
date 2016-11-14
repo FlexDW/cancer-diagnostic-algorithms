@@ -14,7 +14,7 @@ mirChromo <- mirChromo[lapply(mirChromo, length) > 20]
 # Distributional partitions
 mirNorm <- sweep(PRAD$mirRaw, 2, PRAD$mirNF, "/")
 means <- rowMeans(mirNorm)
-capture.output(mirCounts <- CreatePartition(means, ngroup=6), file="GRridge_out/out.txt", append=FALSE)
+capture.output(mirCounts <- CreatePartition(means, ngroup=6), file="GRridge_out/PRAD_group_weights_out", append=FALSE)
 
 # Create partitions list
 parts <- list(mirCounts=mirCounts, 
@@ -31,7 +31,7 @@ capture.output(grro <- grridge(highdimdata=PRAD$mirDat,
                                innfold=5,
                                compareEN=TRUE,
                                maxsel=nvars.PRAD,
-                               trace=FALSE), file="GRridge_out/out.txt", append=TRUE)
+                               trace=FALSE), file="GRridge_out/PRAD_group_weights_out", append=TRUE)
 
 # Add values to list and remove old objects
 PRAD$grro <- grro
