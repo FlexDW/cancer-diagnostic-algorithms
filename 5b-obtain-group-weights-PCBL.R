@@ -12,7 +12,7 @@
 mirNorm <- sweep(PCBL$mirRaw, 2, PCBL$mirNF, "/")
 means <- rowMeans(mirNorm)
 sds <- apply(mirNorm, 1, sd)
-capture.output(mirCounts <- CreatePartition(means, ngroup=8), file="GRridge_out/out.txt", append=TRUE)
+capture.output(mirCounts <- CreatePartition(means, ngroup=8), file="GRridge_out/PCBL_group_weights_out.txt", append=FALSE)
 
 # Tissue betas
 cvo <- cv.glmnet(x=t(PRAD$mirDat), 
@@ -27,7 +27,7 @@ betas <- glmnet(x=t(PRAD$mirDat),
                 family="binomial")$beta
 matched.betas <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), beta=as.vector(betas))
 matched.betas <- matched.betas[complete.cases(matched.betas), ]
-capture.output(betaParts <- CreatePartition(matched.betas$beta, ngroup=5), file="GRridge_out/out.txt", append=TRUE)
+capture.output(betaParts <- CreatePartition(matched.betas$beta, ngroup=5), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
 betaParts <- lapply(betaParts, function(x) matched.betas[x, 1])
 
 # Create partitions list
@@ -47,7 +47,7 @@ capture.output(grro1 <- grridge(highdimdata=PCBL$mirDat,
                                 compareEN=TRUE,
                                 maxsel=nvars.PCBL,
                                 innfold=3,
-                                trace=FALSE), file="GRridge_out/out.txt", append=TRUE)
+                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
 
 optl.PCBL <- grro1$optl
 capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat, 
@@ -58,7 +58,7 @@ capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat,
                                 compareEN=TRUE,
                                 maxsel=nvars.PCBL,
                                 innfold=3,
-                                trace=FALSE), file="GRridge_out/out.txt", append=TRUE)
+                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
 
 # Add values to list and remove old objects
 PCBL$grro1 <- grro1
