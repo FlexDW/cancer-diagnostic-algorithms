@@ -1,7 +1,8 @@
+# File: 5a-obtain-group-weights-PRAD.R
 # Requires
 # - PRAD: data list
-# - nvars.PRAD set: number of variables selected
-# - (optl.PRAD): optional for speedup
+#      ($nvars): number of variables to select (otherwise 5)
+#      ($optl): the optimized L2 global parameter if already known
 # Object added to PRAD list:
 # - grro: GRridge object
 
@@ -21,18 +22,17 @@ parts <- list(mirCounts=mirCounts,
               mirChromo=mirChromo)
 
 # Optimize model with partitions
-if(!"optl.PRAD" %in% ls()) optl.PRAD <- NULL
-if(!"nvars.PRAD" %in% ls()) nvars.PRAD <- 5
+if(is.null(PRAD$nvars)) PRAD$nvars <- 5
 capture.output(grro <- grridge(highdimdata=PRAD$mirDat, 
                                response=as.factor(!PRAD$ctrlIndex), 
                                partitions=parts, 
-                               optl=optl.PRAD,
+                               optl=PRAD$optl,
                                monotone=c(TRUE, FALSE),
                                innfold=5,
                                compareEN=TRUE,
-                               maxsel=nvars.PRAD,
+                               maxsel=PRAD$nvars,
                                trace=FALSE), file="GRridge_out/PRAD_group_weights_out", append=TRUE)
 
 # Add values to list and remove old objects
 PRAD$grro <- grro
-rm(mirTable, mirIndex, mirChromo, mirNorm, means, sds, mirCounts, mirSDs, parts, grro)
+rm(mirTable, mirIndex, mirChromo, mirNorm, means, mirCounts, parts, grro)
