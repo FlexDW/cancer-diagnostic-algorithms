@@ -5,6 +5,8 @@ require(pander)
 require(glmnet)
 require(MASS)
 require(GRridge)
+require(doParallel)
+require(foreach)
 
 # package overwrites
 source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/_fn-grridge-update.R")
