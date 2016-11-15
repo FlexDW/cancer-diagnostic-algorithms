@@ -1,5 +1,4 @@
-# Loads all packages and functions required
-
+# Loads all packages and functions and creates folders
 # packages
 require(pander)
 require(glmnet)
@@ -20,3 +19,7 @@ source("https://raw.githubusercontent.com/FlexDW/classification-model-evaluation
 source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/_fn-cv.predict.R")
 source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/_fn-whichSel.R")
 
+# create folders
+dir.create(file.path(getwd(), "Diagrams"))
+dir.create(file.path(getwd(), "Rdata"))
+dir.create(file.path(getwd(), "GRridge_out"))
