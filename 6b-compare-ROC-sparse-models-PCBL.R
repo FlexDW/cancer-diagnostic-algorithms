@@ -17,7 +17,6 @@ cvSets <- getCvSets(y=Y, nsets=3, seed=cvSeed, print=FALSE)
 
 # Get glmnet formulated optimal L2 
 cvo <- cv.glmnet(x=X, y=Y, alpha=0, family="binomial", foldid=cvSets)
-L2 <- cvo$lambda.min/2
 
 # Set nvars to match Group Regularized EN (sometimes slightly different to target nvars)
 nvars.PCBL <- length(PCBL$grro1$resEN$whichEN)
@@ -92,4 +91,4 @@ legend("bottomright", cex=0.7, lty=1,
        title="AUC, Sensitivity at specificity=0.9")
 dev.off()
 
-rm(cols, X, Y, cvSets, cvo, L2, p.ridge, auc.ridge, roc.ridge, sens.ridge, vars.EN, p.EN, auc.EN, roc.EN, sens.EN, vars.lasso, p.lasso, auc.lasso, roc.lasso, sens.lasso, vars.GREN, p.GREN, auc.GREN, roc.GREN, sens.GREN, vars.GREN2, p.GREN2, auc.GREN2, roc.GREN2, sens.GREN2, legtext)
+rm(cols, X, Y, cvSets, cvo, p.ridge, auc.ridge, roc.ridge, sens.ridge, vars.EN, p.EN, auc.EN, roc.EN, sens.EN, vars.lasso, p.lasso, auc.lasso, roc.lasso, sens.lasso, vars.GREN, p.GREN, auc.GREN, roc.GREN, sens.GREN, vars.GREN2, p.GREN2, auc.GREN2, roc.GREN2, sens.GREN2, legtext)
