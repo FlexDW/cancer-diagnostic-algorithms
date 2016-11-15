@@ -9,7 +9,7 @@
 # Distributional partitions
 mirNorm <- sweep(PCBL$mirRaw, 2, PCBL$mirNF, "/")
 means <- rowMeans(mirNorm)
-capture.output(mirCounts <- CreatePartition(means, ngroup=5), file="GRridge_out/PCBL_group_weights_out.txt", append=FALSE)
+capture.output(mirCounts <- CreatePartition(means, ngroup=8), file="GRridge_out/PCBL_group_weights_out.txt", append=FALSE)
 
 # Tissue betas
 cvo <- cv.glmnet(x=t(PRAD$mirDat), 
@@ -24,35 +24,35 @@ betas <- glmnet(x=t(PRAD$mirDat),
                 family="binomial")$beta
 matched.betas <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), betas=as.vector(betas))
 matched.betas <- matched.betas[complete.cases(matched.betas), ]
-capture.output(betas.parts <- CreatePartition(matched.betas$betas, ngroup=5), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
+capture.output(betas.parts <- CreatePartition(matched.betas$betas, ngroup=8), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
 betas.parts <- lapply(betas.parts, function(x) matched.betas[x, 1])
 
-# Tissue p-values
-mirDGENorm <- DGEList(counts=PRAD$mirRaw, lib.size=PRAD$mirLibSize, norm.factors=PRAD$mirNF, group=PRAD$ctrlIndex)
-MM <- model.matrix(~ PRAD$ctrlIndex)
-mirDCRNorm <- estimateGLMCommonDisp(mirDGENorm, MM) # Estimating common dispersion
-mirDCRNorm <- estimateGLMTagwiseDisp(mirDCRNorm, MM) # Estimate tagwise dispersions from common and tag-specific estimates (shrinkage)
-mirResGLMfitCRNorm <- glmFit(mirDCRNorm, MM, dispersion=mirDCRNorm$tagwise.dispersion) # Fit regression-type model
-mirDENorm <- glmLRT(mirResGLMfitCRNorm, coef=2) # coef=2 refers to ctrlIndex for testing
-matched.pvals <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), pvals=as.vector(mirDENorm$table$PValue))
-matched.pvals <- matched.pvals[complete.cases(matched.pvals), ]
-capture.output(pvals.parts <- CreatePartition(matched.pvals$pvals, ngroup=5), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
-pvals.parts <- lapply(pvals.parts, function(x) matched.pvals[x, 1])
+# # Tissue p-values (NOT FOUND USEFUL)
+# mirDGENorm <- DGEList(counts=PRAD$mirRaw, norm.factors=PRAD$mirNF, group=!PRAD$ctrlIndex)
+# MM <- model.matrix(~ PRAD$ctrlIndex)
+# mirDCRNorm <- estimateGLMCommonDisp(mirDGENorm, MM) # Estimating common dispersion
+# mirDCRNorm <- estimateGLMTagwiseDisp(mirDCRNorm, MM) # Estimate tagwise dispersions from common and tag-specific estimates (shrinkage)
+# mirResGLMfitCRNorm <- glmFit(mirDCRNorm, MM, dispersion=mirDCRNorm$tagwise.dispersion) # Fit regression-type model
+# mirDENorm <- glmLRT(mirResGLMfitCRNorm, coef=2) # coef=2 refers to ctrlIndex for testing
+# mirDENorm$table$PValue <- mirDENorm$table$PValue / 2 # Step 1 of 2, convert to 1 sided
+# mirDENorm$table$PValue[mirDENorm$table$logFC < 0] <- 1 - mirDENorm$table$PValue[mirDENorm$table$logFC < 0] # Step 2 of 2, convert to 1 sided
+# matched.pvals <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), pvals=mirDENorm$table$PValue)
+# matched.pvals <- matched.pvals[complete.cases(matched.pvals), ]
+# capture.output(pvals.parts <- CreatePartition(matched.pvals$pvals, ngroup=8), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
+# pvals.parts <- lapply(pvals.parts, function(x) matched.pvals[x, 1])
 
 
 # Create partitions list
-parts1 <- list(mirBetas=betas.parts,
+parts1 <- list(mirBetas=betas.parts, 
                mirCounts=mirCounts)
 
-parts2 <- list(mirPvals=pvals.parts,
-               mirCounts=mirCounts)
+parts2 <- list(mirCounts=mirCounts)
 
-parts3 <- list(mirCounts=mirCounts)
 
 # set nvars for selection (if not already set)
 if(is.null(PCBL$nvars)) PCBL$nvars <- 5
 
-# Tissue betas model
+# Tissue betas and counts model
 capture.output(grro1 <- grridge(highdimdata=PCBL$mirDat, 
                                 response=as.factor(!PCBL$ctrlIndex), 
                                 partitions=parts1,
@@ -64,30 +64,21 @@ capture.output(grro1 <- grridge(highdimdata=PCBL$mirDat,
                                 trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
 PCBL$optl <- grro1$optl
 
-# Tissue pvals model
+# Counts only model
 capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat, 
                                 response=as.factor(!PCBL$ctrlIndex), 
                                 partitions=parts2,
                                 optl=PCBL$optl,
-                                monotone=c(TRUE, TRUE),
+                                monotone=c(TRUE),
                                 compareEN=TRUE,
                                 maxsel=PCBL$nvars,
                                 innfold=3,
                                 trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
 
-# Counts only model
-capture.output(grro3 <- grridge(highdimdata=PCBL$mirDat, 
-                                response=as.factor(!PCBL$ctrlIndex), 
-                                partitions=parts3,
-                                optl=PCBL$optl,
-                                monotone=TRUE,
-                                compareEN=TRUE,
-                                maxsel=PCBL$nvars,
-                                innfold=3,
-                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
 
 # Add values to list and remove old objects
 PCBL$grro1 <- grro1
 PCBL$grro2 <- grro2
-PCBL$grro3 <- grro3
-rm(mirNorm, means, mirCounts, cvo, betas, matched.betas, betas.parts, mirDGENorm, MM, mirDCRNorm, mirResGLMfitCRNorm, mirDENorm, matched.pvals, pvals.parts, parts1, parts2, parts3, grro1, grro2, grro3)
+
+rm(mirNorm, means, mirCounts, cvo, betas, matched.betas, betas.parts, parts1, parts2, grro1, grro2)
+#rm(mirDGENorm, MM, mirDCRNorm, mirResGLMfitCRNorm, mirDENorm, matched.pvals, pvals.parts, parts3, grro3)
