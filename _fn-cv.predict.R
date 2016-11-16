@@ -1,7 +1,7 @@
-cv.predict <- function(x, y, alpha, lambda, foldid, family="binomial", penalty.factor = rep(1, ncol(x))){
+cv.predict <- function(x, y, alpha, lambda, foldid, family="binomial", penalty.factor = rep(1, ncol(x)), standarize=TRUE){
   
   if(is.null(lambda)){
-    cvo <- cv.glmnet(x=x, y=y, alpha=0, family="binomial", foldid=foldid, penalty.factor=penalty.factor)
+    cvo <- cv.glmnet(x=x, y=y, alpha=0, family="binomial", foldid=foldid, penalty.factor=penalty.factor, standarize=standarize)
     lambda <- cvo$lambda.min
   }
   
@@ -9,7 +9,7 @@ cv.predict <- function(x, y, alpha, lambda, foldid, family="binomial", penalty.f
   for(i in sort(unique(foldid))){
     train <- foldid != i
     test <- foldid == i
-    glmo <- glmnet(x=x[train, ], y=y[train], alpha=alpha, lambda=lambda, family=family, penalty.factor=penalty.factor)
+    glmo <- glmnet(x=x[train, ], y=y[train], alpha=alpha, lambda=lambda, family=family, penalty.factor=penalty.factor, standarize=standarize)
     p[test] <- predict(glmo, newx=x[test, ], type="response")
   }
   return(p)
