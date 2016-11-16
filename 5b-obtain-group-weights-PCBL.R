@@ -24,7 +24,7 @@ betas <- glmnet(x=t(PRAD$mirDat),
                 family="binomial")$beta
 matched.betas <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), betas=as.vector(betas))
 matched.betas <- matched.betas[complete.cases(matched.betas), ]
-capture.output(betas.parts <- CreatePartition(matched.betas$betas, ngroup=8), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
+capture.output(betas.parts <- CreatePartition(matched.betas$betas, ngroup=5), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
 betas.parts <- lapply(betas.parts, function(x) matched.betas[x, 1])
 
 # # Tissue p-values (NOT FOUND USEFUL)
@@ -38,12 +38,12 @@ betas.parts <- lapply(betas.parts, function(x) matched.betas[x, 1])
 # mirDENorm$table$PValue[mirDENorm$table$logFC < 0] <- 1 - mirDENorm$table$PValue[mirDENorm$table$logFC < 0] # Step 2 of 2, convert to 1 sided
 # matched.pvals <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), pvals=mirDENorm$table$PValue)
 # matched.pvals <- matched.pvals[complete.cases(matched.pvals), ]
-# capture.output(pvals.parts <- CreatePartition(matched.pvals$pvals, ngroup=8), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
+# capture.output(pvals.parts <- CreatePartition(matched.pvals$pvals, ngroup=5), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
 # pvals.parts <- lapply(pvals.parts, function(x) matched.pvals[x, 1])
 
 
 # Create partitions list
-parts1 <- list(mirBetas=betas.parts, 
+parts1 <- list(mirBetas=betas.parts,
                mirCounts=mirCounts)
 
 parts2 <- list(mirCounts=mirCounts)
