@@ -25,7 +25,7 @@ betas <- glmnet(x=t(PRAD$mirDat),
 matched.betas <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), betas=as.vector(betas))
 matched.betas <- matched.betas[complete.cases(matched.betas), ]
 capture.output(betas.parts <- CreatePartition(matched.betas$betas, ngroup=5), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
-betas.parts <- lapply(betas.parts, function(x) matched.betas[x, 1])
+betas.parts <- lapply(betas.parts, function(x) matched.betas[x, 1]) 
 
 # # Tissue p-values (NOT FOUND USEFUL)
 # mirDGENorm <- DGEList(counts=PRAD$mirRaw, norm.factors=PRAD$mirNF, group=!PRAD$ctrlIndex)
@@ -52,7 +52,17 @@ parts2 <- list(mirCounts=mirCounts)
 # set nvars for selection (if not already set)
 if(is.null(PCBL$nvars)) PCBL$nvars <- 5
 
-# Tissue betas and counts model
+# Tissue betas and counts model (Ridge)
+capture.output(grro0 <- grridge(highdimdata=PCBL$mirDat, 
+                                response=as.factor(!PCBL$ctrlIndex), 
+                                partitions=parts1,
+                                optl=PCBL$optl,
+                                monotone=c(TRUE, TRUE),
+                                innfold=3,
+                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
+PCBL$optl <- grro0$optl
+
+# Tissue betas and counts model (GREN)
 capture.output(grro1 <- grridge(highdimdata=PCBL$mirDat, 
                                 response=as.factor(!PCBL$ctrlIndex), 
                                 partitions=parts1,
@@ -62,9 +72,8 @@ capture.output(grro1 <- grridge(highdimdata=PCBL$mirDat,
                                 maxsel=PCBL$nvars,
                                 innfold=3,
                                 trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
-PCBL$optl <- grro1$optl
 
-# Counts only model
+# Counts only model (GREN)
 capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat, 
                                 response=as.factor(!PCBL$ctrlIndex), 
                                 partitions=parts2,
@@ -77,8 +86,9 @@ capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat,
 
 
 # Add values to list and remove old objects
+PCBL$grro0 <- grro0
 PCBL$grro1 <- grro1
 PCBL$grro2 <- grro2
 
-rm(mirNorm, means, mirCounts, cvo, betas, matched.betas, betas.parts, parts1, parts2, grro1, grro2)
+rm(mirNorm, means, mirCounts, cvo, betas, matched.betas, betas.parts, parts1, parts2, grro0, grro1, grro2)
 #rm(mirDGENorm, MM, mirDCRNorm, mirResGLMfitCRNorm, mirDENorm, matched.pvals, pvals.parts, parts3, grro3)
