@@ -36,14 +36,14 @@ whichSel <- function(x, y, nvars, foldid, alpha=NULL, lambda=NULL, len=1000, max
     }
   }else{
     count <- 0
-    glmo <- glmnet(x=x, y=y, alpha=1, lambda=lambda, standardize=FALSE, family="binomial", weights=w, penalty.factor=pf, intercept=intercept)
+    glmo <- glmnet(x=x, y=y, alpha=alpha, lambda=lambda, standardize=FALSE, family="binomial", weights=w, penalty.factor=pf, intercept=intercept)
     lambda <- seq(0, max(glmo$lambda), length=len)
     lower <- 1
     upper <- length(lambda)    
     success <- FALSE
     while(!success){
-      i <- round((lower + upper)/2)
-      glmo <- glmnet(x=x, y=y, alpha=1, lambda=lambda[i], weights=w, penalty.factor=pf, standardize=standardize, intercept=intercept, type.logistic=type, family="binomial")
+      i <- round((lower + upper)/2)                       
+      glmo <- glmnet(x=x, y=y, alpha=alpha, lambda=lambda[i], standardize=FALSE, family="binomial", weights=w, penalty.factor=pf, intercept=intercept)
       n_nonzero_feats <- sum(glmo$beta > 0)
       if(n_nonzero_feats > nvars){
         lower <- i
@@ -65,7 +65,5 @@ whichSel <- function(x, y, nvars, foldid, alpha=NULL, lambda=NULL, len=1000, max
       }
     }
   }
-  return(which(betas > 0))
+  return(which(as.vector(betas) > 0))
 }
-
-# rm()
