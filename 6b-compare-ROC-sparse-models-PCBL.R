@@ -7,8 +7,8 @@
 # - "Diagrams/compare_ROC_PCBL_tissue_beta_groups.png"
 
 # set plot color vector
-cols <- c("red", "green", "purple", "gold", "darkgrey")
-names(cols) <- c("ridge", "EN", "lasso", "GREN", "GREN2")
+cols <- c("red", "darkgreen", "green", "purple", "gold", "darkgrey")
+names(cols) <- c("ridge", "GRR", "EN", "lasso", "GREN", "GREN2")
 
 # temporarily assign data
 X <- t(PCBL$mirDat)
@@ -27,15 +27,21 @@ auc.ridge <- glmnet::auc(prob=p.ridge, y=Y)
 roc.ridge <- t(GRridge::roc(probs=p.ridge, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.ridge <- sensitivity(p=p.ridge, y=Y, specificity=0.9)
 
+# Group regularized Ridge
+p.GRR <- cv.predict(x=cbind(1, PCBL$grro0$XMw0), y=Y, alpha=0, lambda=cvo$lambda.min, foldid=cvSets, standardize=FALSE, intercept=FALSE, penalty.factor=rep(1, ncol(PCBL$grro0$XMw0)))
+auc.GRR <- glmnet::auc(prob=p.GRR, y=Y)
+roc.GRR <- t(GRridge::roc(probs=p.GRR, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
+sens.GRR <- sensitivity(p=p.GRR, y=Y, specificity=0.9)
+
 # Elastic Net (EN)
-vars.EN <- whichSel(x=X, y=Y, nvars=nvars.PCBL, L2=cvo$lambda.min/2)
+vars.EN <- whichSel(x=X, y=Y, nvars=nvars.PCBL, lambda=cvo$lambda.min)
 p.EN <- cv.predict(x=X[,vars.EN], y=Y, alpha=0, lambda=NULL, foldid=cvSets)
 auc.EN <- glmnet::auc(prob=p.EN, y=Y)
 roc.EN <- t(GRridge::roc(probs=p.EN, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.EN <- sensitivity(p=p.EN, y=Y, specificity=0.9)
 
 # Lasso
-vars.lasso <- whichSel(x=X, y=Y, nvars=nvars.PCBL, L2=NULL)
+vars.lasso <- whichSel(x=X, y=Y, nvars=nvars.PCBL, alpha=1, lambda=NULL)
 p.lasso <- cv.predict(x=X[, vars.lasso], y=Y, alpha=1, lambda=NULL, foldid=cvSets)
 auc.lasso <- glmnet::auc(prob=p.lasso, y=Y)
 roc.lasso <- t(GRridge::roc(probs=p.lasso, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
@@ -48,25 +54,39 @@ auc.GREN <- glmnet::auc(prob=p.GREN, y=Y)
 roc.GREN <- t(GRridge::roc(probs=p.GREN, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.GREN <- sensitivity(p=p.GREN, y=Y, specificity=0.9)
 
-# create plot
-png(filename="Diagrams/compare_ROC_PCBL.png", width=400, height=400)
+# create plot (all vars)
+png(filename="Diagrams/compare_ROC_PCBL.png", width=800, height=400)
+par(mfrow=c(1, 2))
 plot(roc.ridge, type='l', col=cols["ridge"], 
-     main="ROC comparison, blood data (Variables: "%+%nvars.PCBL%+%")")
-points(roc.EN, type='l', col=cols["EN"])
-points(roc.lasso, type='l', col=cols["lasso"])
-points(roc.GREN, type='l', col=cols["GREN"])
-legtext <- paste(c("Ridge (no selection), ", "Elastic Net, ", "Lasso, ", "Group Reg. EN, "),
+     main="ROC comparison, blood data (all variables)")
+points(roc.GRR, type='l', col=cols["GRR"])
+legtext <- paste(c("Ridge, ", "Group-regularized Ridge, "),
                  "AUC: ",
-                 round(c(auc.ridge, auc.EN, auc.lasso, auc.GREN), 3),
+                 round(c(auc.ridge, auc.GRR), 3),
                  ", Sens: ",
-                 round(c(sens.ridge, sens.EN, sens.lasso, sens.GREN), 3),
+                 round(c(sens.ridge, sens.GRR), 3),
                  sep="")
 legend("bottomright", cex=0.7, lty=1,
        legend=legtext,
-       col=cols[c("ridge", "EN", "lasso", "GREN")],
+       col=cols[c("ridge", "GRR")],
+       title="AUC, Sensitivity at specificity=0.9")
+
+# create plot (5 vars)
+plot(roc.EN, type='l', col=cols["EN"], 
+     main="ROC comparison, blood data (variables: "%+%nvars.PCBL%+%")")
+points(roc.lasso, type='l', col=cols["lasso"])
+points(roc.GREN, type='l', col=cols["GREN"])
+legtext <- paste(c("Elastic Net, ", "Lasso, ", "Group Reg. EN, "),
+                 "AUC: ",
+                 round(c(auc.EN, auc.lasso, auc.GREN), 3),
+                 ", Sens: ",
+                 round(c(sens.EN, sens.lasso, sens.GREN), 3),
+                 sep="")
+legend("bottomright", cex=0.7, lty=1,
+       legend=legtext,
+       col=cols[c("EN", "lasso", "GREN")],
        title="AUC, Sensitivity at specificity=0.9")
 dev.off()
-
 
 # Compare without Tissue Betas
 vars.GREN2 <- PCBL$grro2$resEN$whichEN
