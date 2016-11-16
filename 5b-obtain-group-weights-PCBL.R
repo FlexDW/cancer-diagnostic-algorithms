@@ -29,7 +29,7 @@ betas.parts <- lapply(betas.parts, function(x) matched.betas[x, 1])
 
 # # Tissue p-values (NOT FOUND USEFUL)
 # mirDGENorm <- DGEList(counts=PRAD$mirRaw, norm.factors=PRAD$mirNF, group=!PRAD$ctrlIndex)
-# MM <- model.matrix(~ PRAD$ctrlIndex)
+# MM <- model.matrix(~ !PRAD$ctrlIndex)
 # mirDCRNorm <- estimateGLMCommonDisp(mirDGENorm, MM) # Estimating common dispersion
 # mirDCRNorm <- estimateGLMTagwiseDisp(mirDCRNorm, MM) # Estimate tagwise dispersions from common and tag-specific estimates (shrinkage)
 # mirResGLMfitCRNorm <- glmFit(mirDCRNorm, MM, dispersion=mirDCRNorm$tagwise.dispersion) # Fit regression-type model
