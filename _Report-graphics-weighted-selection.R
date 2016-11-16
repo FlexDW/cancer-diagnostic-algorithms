@@ -137,3 +137,5 @@ dmax <- max(c(dnorm(X[, 2], mean=mu2.C, sd=sd2.C), dnorm(X[, 2], mean=mu2.T, sd=
 abline(v=spec, lty=3)
 text(x=spec, y=dmax, labels=paste("Specificity = 0.9, sensitivity =", sens), pos=4, cex=0.9)
 dev.off()
+
+rm(.Random.seed, dmax, glmo1, glmo2, glmo3, glmo4, glmo5, line1, line2, line3, mu.C, mu.T, mu1.C, mu1.T, mu2.C,    mu2.T, N, N1, N2, N3, sd1.C, sd1.T, sd2.C, sd2.T, sens, SIG.C, SIG.T, spec, X, X1, x1range, X2, x2range, X3, Y1, Y2, Y3)
