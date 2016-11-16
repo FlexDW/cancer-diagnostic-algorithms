@@ -22,9 +22,8 @@ cvSets <- getCvSets(y=Y, nsets=10, seed=cvSeed, print=FALSE)
 # Set nvars to match Group Regularized EN (sometimes slightly different to target nvars)
 nvars.PRAD <- length(PRAD$grro$resEN$whichEN)
 
-# Get glmnet formulated optimal L2 
+# Get glmnet formulated optimal lambda
 cvo <- cv.glmnet(x=X, y=Y, alpha=0, family="binomial", foldid=cvSets)
-L2 <- cvo$lambda.min/2
 
 # Ridge
 p.ridge <- cv.predict(x=X, y=Y, alpha=0, lambda=cvo$lambda.min, foldid=cvSets)
@@ -33,14 +32,14 @@ roc.ridge <- t(GRridge::roc(probs=p.ridge, true=Y, cutoffs=seq(1, 0, length=201)
 sens.ridge <- sensitivity(p=p.ridge, y=Y, specificity=0.9)
 
 # Elastic Net (EN)
-vars.EN <- whichSel(x=X, y=Y, nvars=nvars.PRAD, L2=cvo$lambda.min/2)
+vars.EN <- whichSel(x=X, y=Y, nvars=nvars.PRAD, lambda=cvo$lambda.min)
 p.EN <- cv.predict(x=X[,vars.EN], y=Y, alpha=0, lambda=NULL, foldid=cvSets)
 auc.EN <- glmnet::auc(prob=p.EN, y=Y)
 roc.EN <- t(GRridge::roc(probs=p.EN, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.EN <- sensitivity(p=p.EN, y=Y, specificity=0.9)
 
 # Lasso
-vars.lasso <- whichSel(x=X, y=Y, nvars=nvars.PRAD, L2=NULL)
+vars.lasso <- whichSel(x=X, y=Y, nvars=nvars.PRAD, alpha=1)
 p.lasso <- cv.predict(x=X[, vars.lasso], y=Y, alpha=1, lambda=NULL, foldid=cvSets)
 auc.lasso <- glmnet::auc(prob=p.lasso, y=Y)
 roc.lasso <- t(GRridge::roc(probs=p.lasso, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
@@ -72,4 +71,4 @@ legend("bottomright", cex=0.7, lty=1,
        title="AUC, Sensitivity at specificity=0.9")
 dev.off()
 
-# rm(cols, X, Y, cvSets, cvo, L2, p.ridge, auc.ridge, roc.ridge, sens.ridge, vars.EN, p.EN, auc.EN, roc.EN, sens.EN, vars.lasso, p.lasso, auc.lasso, roc.lasso, sens.lasso, vars.GREN, p.GREN, auc.GREN, roc.GREN, sens.GREN, legtext)
+rm(cols, X, Y, cvSets, nvars.PRAD, cvo, p.ridge, auc.ridge, roc.ridge, sens.ridge, vars.EN, p.EN, auc.EN, roc.EN, sens.EN, vars.lasso, p.lasso, auc.lasso, roc.lasso, sens.lasso, vars.GREN, p.GREN, auc.GREN, roc.GREN, sens.GREN, legtext)
