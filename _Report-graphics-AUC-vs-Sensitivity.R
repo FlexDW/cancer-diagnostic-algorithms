@@ -78,3 +78,5 @@ legend("bottomright",
        col=c("blue", "magenta"), 
        lty=1, cex=0.7, title="Scenario:")
 dev.off()
+
+rm(.Random.seed, aC, aT, bC, bT, fROC, p, ROC, ROC2, ROC3, ROCplot, x, Y)
