@@ -53,15 +53,12 @@ for(i in 1:nrow(GRR_unique)){
   sens <- sensitivity(p=p, y=Y, specificity=0.9)
   GRR_ROC_chart_data[[i]] <- list(auc=auc, roc=roc, sens=sens)
 }
-# rm()
-GRR_ROC_chart_data[1]
-length(GRR_ROC_chart_data)
 
-
+cols <- c("red", "green", "purple", "gold", "darkgrey")
 plot(GRR_ROC_chart_data[[1]]$roc, type='l', col=cols[1], 
      main="ROC comparison, selection at different weights")
-for(i in 2:len(GRR_ROC_chart_data)){
-  points(roc.GRR, type='l', col=cols["GRR"])
+for(i in 2:length(GRR_ROC_chart_data)){
+  points(GRR_ROC_chart_data[[i]]$roc, type='l', col=cols[i])
 }
 legtext <- paste(c("Ridge, ", "Group-regularized Ridge, "),
                  "AUC: ",
@@ -73,3 +70,6 @@ legend("bottomright", cex=0.7, lty=1,
        legend=legtext,
        col=cols[c("ridge", "GRR")],
        title="AUC, Sensitivity at specificity=0.9")
+
+
+# rm()
