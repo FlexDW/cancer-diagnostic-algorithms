@@ -1,0 +1,59 @@
+# Requires
+
+# Saves:
+
+# setup grid search parameters
+weights <- seq(0.05, 0.95, length=19)
+alphas <- seq(0.001, 1, length=2000)
+gridmat <- expand.grid(alphas, weights)
+colnames(gridmat) <- c("alpha", "w")
+
+# create iterator and run
+try_out <- try(load("Rdata/temp_save_PCBL_models.Rdata"))
+if(!"models" %in% ls()){
+  cl <- makeCluster(2)
+  registerDoParallel(cl)
+  registerDoParallel(cores=4)
+  ivals <- iter(gridmat, by='row')
+  models <- foreach(vals=ivals, .packages='glmnet') %dopar% {
+    ridge <- modelSearch(x=t(PCBL$mirDat), 
+                         y=as.numeric(!PCBL$ctrlIndex), 
+                         nvars=5, 
+                         nlambda=600,
+                         alpha=vals[[1]], 
+                         weight=vals[[2]])
+    GRR <- modelSearch(x=PCBL$grro1$XMw0,
+                       y=as.numeric(!PCBL$ctrlIndex), 
+                       nvars=5, 
+                       nlambda=600,
+                       alpha=vals[[1]], 
+                       weight=vals[[2]])
+    list(ridge=ridge, GRR=GRR)
+  }
+  stopCluster(cl)
+  save(models, file="Rdata/temp_save_PCBL_models.Rdata")
+}
+
+ridge_models <- lapply(models, function(x) x[["ridge"]])
+GRR_models <- lapply(models, function(x) x[["GRR"]])
+
+ridge_models <- do.call(rbind, ridge_models)
+GRR_models <- do.call(rbind, GRR_models)
+
+ridge_models <- cbind(ridge_models, gridmat)
+GRR_models <- cbind(GRR_models, gridmat)
+
+ridge_models <- ridge_models[rowSums(ridge_models[, 1:5]) > 0, ]
+GRR_models <- GRR_models[rowSums(GRR_models[, 1:5]) > 0, ]
+
+ridge_unique <- ridge_models[!duplicated(ridge_models[, 1:5]), ]
+GRR_unique <- GRR_models[!duplicated(GRR_models[, 1:5]), ]
+
+ridge_ref <- apply(ridge_models[, 1:5], 1, function(x) which(colSums(x == t(ridge_unique[, 1:5])) == 5))
+ridge_models <- cbind(ridge_models, ridge_ref)
+
+GRR_ref <- apply(GRR_models[, 1:5], 1, function(x) which(colSums(x == t(GRR_unique[, 1:5])) == 5))
+GRR_models <- cbind(GRR_models, GRR_ref)
+
+
+# rm()
