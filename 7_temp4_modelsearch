@@ -1,0 +1,75 @@
+# Requires
+
+# Saves:
+
+# setup grid search parameters
+Y <- as.numeric(!PCBL$ctrlIndex)
+X_ridge <- t(PCBL$mirDat)
+X_GRR <- cbind(1, PCBL$grro1$XMw0)
+
+weights <- seq(0.05, 0.95, length=19)
+cv_sets <- getCvSets(y=Y, nsets=3, seed=cvSeed, print=FALSE)
+  
+# create iterator and run
+cl <- makeCluster(2)
+registerDoParallel(cl)
+registerDoParallel(cores=4)
+iter_weights <- iter(weights)
+models <- foreach(w=iter_weights, .packages='glmnet') %dopar% {
+  weight_vec <- abs(1 - w - Y)^0.5
+  ridge <- whichSel(x=X_ridge, 
+                    y=Y, 
+                    nvars=5, 
+                    foldid=cv_sets, 
+                    w=weight_vec,
+                    intercept=TRUE)
+  GRR <- whichSel(x=X_GRR, 
+                  y=Y, 
+                  nvars=5, 
+                  foldid=cv_sets, 
+                  w=weight_vec, 
+                  pf=c(0, rep(1, ncol(X_GRR) - 1)), 
+                  intercept=FALSE)
+  list(ridge=ridge, GRR=GRR)
+}
+stopCluster(cl)
+
+
+ridge_models <- lapply(models, function(x) x[["ridge"]])
+GRR_models <- lapply(models, function(x) x[["GRR"]])
+
+ridge_models <- do.call(rbind, ridge_models)
+GRR_models <- do.call(rbind, GRR_models)
+
+ridge_unique <- ridge_models[!duplicated(ridge_models), , drop=FALSE]
+GRR_unique <- GRR_models[!duplicated(GRR_models), , drop=FALSE]
+
+GRR_ROC_chart_data <- list()
+for(i in 1:nrow(GRR_unique)){
+  vars <- GRR_unique[i, ]
+  p <- cv.predict(x=X_GRR[, vars], y=Y, alpha=0, lambda=NULL, foldid=cv_sets)
+  auc <- glmnet::auc(prob=p, y=Y)
+  roc <- t(GRridge::roc(probs=p, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
+  sens <- sensitivity(p=p, y=Y, specificity=0.9)
+  GRR_ROC_chart_data[[i]] <- list(auc=auc, roc=roc, sens=sens)
+}
+# rm()
+GRR_ROC_chart_data[1]
+length(GRR_ROC_chart_data)
+
+
+plot(GRR_ROC_chart_data[[1]]$roc, type='l', col=cols[1], 
+     main="ROC comparison, selection at different weights")
+for(i in 2:len(GRR_ROC_chart_data)){
+  points(roc.GRR, type='l', col=cols["GRR"])
+}
+legtext <- paste(c("Ridge, ", "Group-regularized Ridge, "),
+                 "AUC: ",
+                 round(c(auc.ridge, auc.GRR), 3),
+                 ", Sens: ",
+                 round(c(sens.ridge, sens.GRR), 3),
+                 sep="")
+legend("bottomright", cex=0.7, lty=1,
+       legend=legtext,
+       col=cols[c("ridge", "GRR")],
+       title="AUC, Sensitivity at specificity=0.9")
