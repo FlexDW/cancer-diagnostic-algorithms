@@ -1,7 +1,7 @@
-whichSel <- function(x, y, nvars, foldid, alpha=NULL, lambda=NULL, len=1000, maxit=10, w=rep(1, nrow(x)), pf=rep(1, ncol(x)), intercept=TRUE){
+whichSel <- function(x, y, nvars, foldid, alpha=NULL, lambda=NULL, len=1000, maxit=10, w=rep(1, nrow(x)), pf=rep(1, ncol(x)), intercept=TRUE, family="binomial"){
   if(is.null(alpha)){
     if(is.null(lambda)){
-      cvo <- cv.glmnet(x, y, alpha=0, nlambda=600, standardize=FALSE, family="binomial", foldid=foldid, weights=w, penalty.factor=pf, intercept=intercept)
+      cvo <- cv.glmnet(x, y, alpha=0, nlambda=600, standardize=FALSE, family=family, foldid=foldid, weights=w, penalty.factor=pf, intercept=intercept)
       lambda <- cvo$lambda.min
     }
     
@@ -13,7 +13,7 @@ whichSel <- function(x, y, nvars, foldid, alpha=NULL, lambda=NULL, len=1000, max
     lower <- 1; upper <- nrow(grid); success <- FALSE; count <- 0;
     while(!success){
       i <- round((lower + upper)/2)
-      glmo <- glmnet(x=x, y=y, lambda=grid[i, 1], alpha=grid[i, 2], standardize=FALSE, family="binomial", weights=w, penalty.factor=pf, intercept=intercept)
+      glmo <- glmnet(x=x, y=y, lambda=grid[i, 1], alpha=grid[i, 2], standardize=FALSE, family=family, weights=w, penalty.factor=pf, intercept=intercept)
       n_nonzero_feats <- sum(glmo$beta > 0)
       if(n_nonzero_feats > nvars){
         lower <- i
@@ -36,14 +36,14 @@ whichSel <- function(x, y, nvars, foldid, alpha=NULL, lambda=NULL, len=1000, max
     }
   }else{
     count <- 0
-    glmo <- glmnet(x=x, y=y, alpha=alpha, lambda=lambda, standardize=FALSE, family="binomial", weights=w, penalty.factor=pf, intercept=intercept)
+    glmo <- glmnet(x=x, y=y, alpha=alpha, lambda=lambda, standardize=FALSE, family=family, weights=w, penalty.factor=pf, intercept=intercept)
     lambda <- seq(0, max(glmo$lambda), length=len)
     lower <- 1
     upper <- length(lambda)    
     success <- FALSE
     while(!success){
       i <- round((lower + upper)/2)                       
-      glmo <- glmnet(x=x, y=y, alpha=alpha, lambda=lambda[i], standardize=FALSE, family="binomial", weights=w, penalty.factor=pf, intercept=intercept)
+      glmo <- glmnet(x=x, y=y, alpha=alpha, lambda=lambda[i], standardize=FALSE, family=family, weights=w, penalty.factor=pf, intercept=intercept)
       n_nonzero_feats <- sum(glmo$beta > 0)
       if(n_nonzero_feats > nvars){
         lower <- i
