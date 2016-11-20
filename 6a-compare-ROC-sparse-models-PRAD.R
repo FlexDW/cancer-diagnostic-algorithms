@@ -5,8 +5,6 @@
 # Saves:
 # - "Diagrams/compare_ROC_PRAD.png"
 
-# Cleanup:
-# - change chart title to dynamically state how many variables were selected (same for PCBL)
 
 # set plot color vector
 cols <- c("red", "green", "purple", "gold", "darkgrey")
