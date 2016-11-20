@@ -86,4 +86,4 @@ legend("bottomright", cex=0.7, lty=1,
        title="AUC, Sensitivity at specificity=0.9")
 dev.off()
 
-rm(Y, X_ridge, X_GRR, weights, cv_sets, iter_weights, models, ridge_models, GRR_models, ridge_unique, GRR_unique, ridge_ref, GRR_ref, GRR_w_range, start, end, GRR_w_range, GRR_ROC_chart_data, vars, p, GRR_ROC_chart_data, cols, legtext)
+rm(Y, X_ridge, X_GRR, weights, cv_sets, iter_weights, models, ridge_models, GRR_models, ridge_unique, GRR_unique, ridge_ref, GRR_ref, GRR_w_range, start, end, vars, p, GRR_ROC_chart_data, cols, legtext)
