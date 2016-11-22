@@ -86,9 +86,9 @@ capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat,
 
 
 # Add values to list and remove old objects
-PCBL$grro0 <- grro0
-PCBL$grro1 <- grro1
-PCBL$grro2 <- grro2
+PCBL$mir_grro0 <- grro0
+PCBL$mir_grro1 <- grro1
+PCBL$mir_grro2 <- grro2
 
 rm(mirNorm, means, mirCounts, cvo, betas, matched.betas, betas.parts, parts1, parts2, grro0, grro1, grro2)
 #rm(mirDGENorm, MM, mirDCRNorm, mirResGLMfitCRNorm, mirDENorm, matched.pvals, pvals.parts, parts3, grro3)
