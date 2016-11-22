@@ -12,16 +12,7 @@ means <- rowMeans(mirNorm)
 capture.output(mirCounts <- CreatePartition(means, ngroup=8), file="GRridge_out/PCBL_group_weights_out.txt", append=FALSE)
 
 # Tissue betas
-cvo <- cv.glmnet(x=t(PRAD$mirDat), 
-                 y=as.numeric(!PRAD$ctrlIndex), 
-                 alpha=0, 
-                 family="binomial", 
-                 foldid=getCvSets(y=!PRAD$ctrlIndex, nsets=3, seed=cvSeed, print=FALSE))
-betas <- glmnet(x=t(PRAD$mirDat), 
-                y=as.numeric(!PRAD$ctrlIndex), 
-                alpha=0, 
-                lambda=cvo$lambda.min,
-                family="binomial")$beta
+betas <- PRAD$mir_grro$betas
 matched.betas <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), betas=as.vector(betas))
 matched.betas <- matched.betas[complete.cases(matched.betas), ]
 capture.output(betas.parts <- CreatePartition(matched.betas$betas, ngroup=5), file="GRridge_out/PCBL_group_weights_out.txt", append=TRUE)
