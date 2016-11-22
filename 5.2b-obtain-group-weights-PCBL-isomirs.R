@@ -1,4 +1,4 @@
-# File: 5d-obtain-group-weights-PCBL-isomirs.R
+# File: 5.2b-obtain-group-weights-PCBL-isomirs.R
 # Requires
 # - PCBL: data list
 #      ($nvars): number of variables to select (otherwise 5)
