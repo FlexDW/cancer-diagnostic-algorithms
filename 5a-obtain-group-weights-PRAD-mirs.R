@@ -34,5 +34,5 @@ capture.output(grro <- grridge(highdimdata=PRAD$mirDat,
                                trace=FALSE), file="GRridge_out/PRAD_group_weights_out.txt", append=TRUE)
 
 # Add values to list and remove old objects
-PRAD$grro <- grro
+PRAD$mir_grro <- grro
 rm(mirTable, mirIndex, mirChromo, mirNorm, means, mirCounts, parts, grro)
