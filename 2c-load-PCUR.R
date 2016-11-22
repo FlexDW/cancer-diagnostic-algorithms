@@ -1,10 +1,11 @@
+# File: 2c-load-PCUR.R
 # !NOTE: edgeR needs to be installed
 # First include path variable to the data and mirLookup table, i.e.:
-# PCBL_data_path <- ".../Data"
+# PCUR_data_path <- ".../Data"
 
 # assumes file loaded is transposed (i.e. features as rows and samples as columns)
-isoDat <- isoRaw <- read.table(paste(PCBL_data_path, "PCBL_counts_transp.txt", sep="/"), header=TRUE, row.names=1)
-mirLookup <- read.table(paste(PCBL_data_path, "mirLookup.txt", sep="/"), stringsAsFactors=F, header=T)
+isoDat <- isoRaw <- read.table(PCUR_data_path %+% "/PCUR_counts_transp.txt", header=TRUE, row.names=1)
+mirLookup <- read.table(PCUR_data_path %+% "/mirLookup.txt", stringsAsFactors=F, header=T)
 
 # obtain labels from data set
 isomirs <- rownames(isoDat)
@@ -18,26 +19,9 @@ splitIsoDat <- split(isoDat, mirs)
 mirDat <- mirRaw <- t(sapply(splitIsoDat, colSums))
 mirs <- rownames(mirDat)
 
-# extract patientID and control group flag from barcodes
-PID <- substr(barcodes, 1, 10)
-ctrlIndex <- substr(barcodes, 12, 12) == "H"
-
-# Define control and tumor sets
-# (most patients are in both groups so we define based on a matched control sample existing)
-ctrlPID <- unique(PID[ctrlIndex])
-tmrPID <- setdiff(PID[!ctrlIndex], ctrlPID)
-
-# Remove samples from opposite group and any other duplicates
-setIndex <- ((PID %in% ctrlPID) & ctrlIndex) | ((PID %in% tmrPID) & !ctrlIndex)
-setIndex[setIndex & ctrlIndex] <- rev(!duplicated(rev(PID[setIndex & ctrlIndex])))
-setIndex[setIndex & !ctrlIndex] <- rev(!duplicated(rev(PID[setIndex & !ctrlIndex])))
-isoDat <- isoDat[, setIndex]
-mirDat <- mirDat[, setIndex]
-isoRaw <- isoRaw[, setIndex]
-mirRaw <- mirRaw[, setIndex]
-barcodes <- barcodes[setIndex]
-PID <- PID[setIndex]
-ctrlIndex <- ctrlIndex[setIndex]
+# define control group flag as first 4 columns
+PID <- barcodes
+ctrlIndex <- 1:length(barcodes) %in% 1:4
 
 # Select subset of data s.t. non-zero samples > 10% (unlikely to be important if less)
 isomirIndex <- apply(isoDat, 1, function(x) mean(x > 0)) > 0.1
@@ -69,7 +53,7 @@ isoDat <- t(scale(t(isoDat)))
 mirDat <- t(scale(t(mirDat)))
 
 # create list and remove old objects
-PCBL <- list(isoDat=isoDat, 
+PCUR <- list(isoDat=isoDat, 
              mirLookup=mirLookup, 
              isomirs=isomirs, 
              barcodes=barcodes, 
@@ -88,4 +72,4 @@ PCBL <- list(isoDat=isoDat,
              mirRelLibSize=mirRelLibSize, 
              mirNF=mirNF)
 
-rm(idx, splitIsoDat, setIndex, mirIndex, isomirIndex, g, isoDat, mirLookup, isomirs, barcodes, mirs, mirDat, PID, ctrlIndex, ctrlPID, tmrPID, isoRaw, mirRaw, isoLibSize, isoRelLibSize, isoNF, mirLibSize, mirRelLibSize, mirNF)
+rm(idx, splitIsoDat, mirIndex, isomirIndex, g, isoDat, mirLookup, isomirs, barcodes, mirs, mirDat, PID, ctrlIndex, ctrlPID, tmrPID, isoRaw, mirRaw, isoLibSize, isoRelLibSize, isoNF, mirLibSize, mirRelLibSize, mirNF)
