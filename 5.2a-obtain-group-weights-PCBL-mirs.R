@@ -1,4 +1,4 @@
-# File: 5b-obtain-group-weights-PCBL-mirs.R
+# File: 5.2a-obtain-group-weights-PCBL-mirs.R
 # Requires
 # - PCBL: data list
 #      ($nvars): number of variables to select (otherwise 5)
