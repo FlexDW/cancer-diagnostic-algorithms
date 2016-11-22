@@ -1,4 +1,4 @@
-# File: 5c-obtain-group-weights-PRAD-isomirs.R
+# File: 5.1b-obtain-group-weights-PRAD-isomirs.R
 # Requires
 # - PRAD: data list
 #      ($nvars): number of variables to select (otherwise 5)
