@@ -60,8 +60,7 @@ PCUR <- list(isoDat=isoDat,
              mirs=mirs, 
              mirDat=mirDat, 
              PID=PID, 
-             ctrlIndex=ctrlIndex, 
-             ctrlPID=ctrlPID, 
+             ctrlIndex=ctrlIndex,
              tmrPID=tmrPID, 
              isoRaw=isoRaw, 
              mirRaw=mirRaw, 
@@ -72,4 +71,4 @@ PCUR <- list(isoDat=isoDat,
              mirRelLibSize=mirRelLibSize, 
              mirNF=mirNF)
 
-rm(idx, splitIsoDat, mirIndex, isomirIndex, g, isoDat, mirLookup, isomirs, barcodes, mirs, mirDat, PID, ctrlIndex, ctrlPID, tmrPID, isoRaw, mirRaw, isoLibSize, isoRelLibSize, isoNF, mirLibSize, mirRelLibSize, mirNF)
+rm(idx, splitIsoDat, mirIndex, isomirIndex, g, isoDat, mirLookup, isomirs, barcodes, mirs, mirDat, PID, ctrlIndex, tmrPID, isoRaw, mirRaw, isoLibSize, isoRelLibSize, isoNF, mirLibSize, mirRelLibSize, mirNF)
