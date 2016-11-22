@@ -19,6 +19,7 @@ source("https://raw.githubusercontent.com/FlexDW/classification-model-evaluation
 # specific functions from this repository
 source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/_fn-cv.predict.R")
 source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/_fn-whichSel.R")
+source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/_fn-normX.R")
 
 # create folders
 dir.create(file.path(getwd(), "Diagrams"))
