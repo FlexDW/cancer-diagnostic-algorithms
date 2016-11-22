@@ -1,5 +1,5 @@
 # Requires
-# - PCBL: data list with grro1 and grro2 objects loaded
+# - PCBL: data list with mir_grro1 and mir_grro2 objects loaded
 # - packages: glmnet, GRridge
 # - functions: %+%, getCvSets, cv.predict, whichSel, sensitivity
 # Saves:
@@ -19,7 +19,7 @@ cvSets <- getCvSets(y=Y, nsets=3, seed=cvSeed, print=FALSE)
 cvo <- cv.glmnet(x=X, y=Y, alpha=0, family="binomial", foldid=cvSets)
 
 # Set nvars to match Group Regularized EN (sometimes slightly different to target nvars)
-nvars.PCBL <- length(PCBL$grro1$resEN$whichEN)
+nvars.PCBL <- length(PCBL$mir_grro1$resEN$whichEN)
 
 # Ridge
 p.ridge <- cv.predict(x=X, y=Y, alpha=0, lambda=cvo$lambda.min, foldid=cvSets)
@@ -28,7 +28,7 @@ roc.ridge <- t(GRridge::roc(probs=p.ridge, true=Y, cutoffs=seq(1, 0, length=201)
 sens.ridge <- sensitivity(p=p.ridge, y=Y, specificity=0.9)
 
 # Group regularized Ridge
-p.GRR <- cv.predict(x=cbind(1, PCBL$grro0$XMw0), y=Y, alpha=0, lambda=cvo$lambda.min, foldid=cvSets, standardize=FALSE, intercept=FALSE, penalty.factor=rep(1, ncol(PCBL$grro0$XMw0)))
+p.GRR <- cv.predict(x=cbind(1, PCBL$mir_grro0$XMw0), y=Y, alpha=0, lambda=cvo$lambda.min, foldid=cvSets, standardize=FALSE, intercept=FALSE, penalty.factor=rep(1, ncol(PCBL$mir_grro0$XMw0)))
 auc.GRR <- glmnet::auc(prob=p.GRR, y=Y)
 roc.GRR <- t(GRridge::roc(probs=p.GRR, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.GRR <- sensitivity(p=p.GRR, y=Y, specificity=0.9)
@@ -48,7 +48,7 @@ roc.lasso <- t(GRridge::roc(probs=p.lasso, true=Y, cutoffs=seq(1, 0, length=201)
 sens.lasso <- sensitivity(p=p.lasso, y=Y, specificity=0.9)
 
 # Group Regularized Elastic Net (GREN)
-vars.GREN <- PCBL$grro1$resEN$whichEN
+vars.GREN <- PCBL$mir_grro1$resEN$whichEN
 p.GREN <- cv.predict(x=X[, vars.GREN], y=Y, alpha=0, lambda=NULL, foldid=cvSets)
 auc.GREN <- glmnet::auc(prob=p.GREN, y=Y)
 roc.GREN <- t(GRridge::roc(probs=p.GREN, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
@@ -89,7 +89,7 @@ legend("bottomright", cex=0.7, lty=1,
 dev.off()
 
 # Compare without Tissue Betas
-vars.GREN2 <- PCBL$grro2$resEN$whichEN
+vars.GREN2 <- PCBL$mir_grro2$resEN$whichEN
 p.GREN2 <- cv.predict(x=X[, vars.GREN2], y=Y, alpha=0, lambda=NULL, foldid=cvSets)
 auc.GREN2 <- glmnet::auc(prob=p.GREN2, y=Y)
 roc.GREN2 <- t(GRridge::roc(probs=p.GREN2, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
