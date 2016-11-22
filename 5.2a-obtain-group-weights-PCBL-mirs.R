@@ -58,7 +58,7 @@ capture.output(grro0 <- grridge(highdimdata=PCBL$mirDat,
                                 partitions=parts1,
                                 optl=PCBL$mir_optl,
                                 monotone=c(TRUE, TRUE),
-                                innfold=10,
+                                innfold=3,
                                 trace=FALSE), file="GRridge_out/PCBL_group_weights_out.txt", append=TRUE)
 PCBL$mir_optl <- grro0$optl
 
@@ -70,7 +70,7 @@ capture.output(grro1 <- grridge(highdimdata=PCBL$mirDat,
                                 monotone=c(TRUE, TRUE),
                                 compareEN=TRUE,
                                 maxsel=PCBL$nvars,
-                                innfold=10,
+                                innfold=3,
                                 trace=FALSE), file="GRridge_out/PCBL_group_weights_out.txt", append=TRUE)
 
 # Counts only model (GREN)
@@ -81,7 +81,7 @@ capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat,
                                 monotone=c(TRUE),
                                 compareEN=TRUE,
                                 maxsel=PCBL$nvars,
-                                innfold=10,
+                                innfold=3,
                                 trace=FALSE), file="GRridge_out/PCBL_group_weights_out.txt", append=TRUE)
 
 
