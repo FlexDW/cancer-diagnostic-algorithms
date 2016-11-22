@@ -24,7 +24,7 @@ betas <- glmnet(x=t(PRAD$mirDat),
                 family="binomial")$beta
 matched.betas <- data.frame(mir=match(PRAD$mirs, PCBL$mirs), betas=as.vector(betas))
 matched.betas <- matched.betas[complete.cases(matched.betas), ]
-capture.output(betas.parts <- CreatePartition(matched.betas$betas, ngroup=5), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
+capture.output(betas.parts <- CreatePartition(matched.betas$betas, ngroup=5), file="GRridge_out/PCBL_group_weights_out.txt", append=TRUE)
 betas.parts <- lapply(betas.parts, function(x) matched.betas[x, 1]) 
 
 # # Tissue p-values (NOT FOUND USEFUL)
@@ -59,7 +59,7 @@ capture.output(grro0 <- grridge(highdimdata=PCBL$mirDat,
                                 optl=PCBL$optl,
                                 monotone=c(TRUE, TRUE),
                                 innfold=3,
-                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
+                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out.txt", append=TRUE)
 PCBL$optl <- grro0$optl
 
 # Tissue betas and counts model (GREN)
@@ -71,7 +71,7 @@ capture.output(grro1 <- grridge(highdimdata=PCBL$mirDat,
                                 compareEN=TRUE,
                                 maxsel=PCBL$nvars,
                                 innfold=3,
-                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
+                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out.txt", append=TRUE)
 
 # Counts only model (GREN)
 capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat, 
@@ -82,7 +82,7 @@ capture.output(grro2 <- grridge(highdimdata=PCBL$mirDat,
                                 compareEN=TRUE,
                                 maxsel=PCBL$nvars,
                                 innfold=3,
-                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out", append=TRUE)
+                                trace=FALSE), file="GRridge_out/PCBL_group_weights_out.txt", append=TRUE)
 
 
 # Add values to list and remove old objects
