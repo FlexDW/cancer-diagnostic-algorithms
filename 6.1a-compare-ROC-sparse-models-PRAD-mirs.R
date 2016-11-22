@@ -1,5 +1,5 @@
 # Requires
-# - PRAD: data list with grro object loaded
+# - PRAD: data list with mir_grro object loaded
 # - packages: glmnet, GRridge
 # - functions: %+%, getCvSets, cv.predict, whichSel, sensitivity
 # Saves:
@@ -18,7 +18,7 @@ Y <- as.numeric(!PRAD$ctrlIndex)
 cvSets <- getCvSets(y=Y, nsets=10, seed=cvSeed, print=FALSE)
 
 # Set nvars to match Group Regularized EN (sometimes slightly different to target nvars)
-nvars.PRAD <- length(PRAD$grro$resEN$whichEN)
+nvars.PRAD <- length(PRAD$mir_grro$resEN$whichEN)
 
 # Get glmnet formulated optimal lambda
 cvo <- cv.glmnet(x=X, y=Y, alpha=0, family="binomial", foldid=cvSets)
@@ -44,7 +44,7 @@ roc.lasso <- t(GRridge::roc(probs=p.lasso, true=Y, cutoffs=seq(1, 0, length=201)
 sens.lasso <- sensitivity(p=p.lasso, y=Y, specificity=0.9)
 
 # Group Regularized Elastic Net (GREN)
-vars.GREN <- PRAD$grro$resEN$whichEN
+vars.GREN <- PRAD$mir_grro$resEN$whichEN
 p.GREN <- cv.predict(x=X[, vars.GREN], y=Y, alpha=0, lambda=NULL, foldid=cvSets)
 auc.GREN <- glmnet::auc(prob=p.GREN, y=Y)
 roc.GREN <- t(GRridge::roc(probs=p.GREN, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
