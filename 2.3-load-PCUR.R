@@ -1,4 +1,4 @@
-# File: 2c-load-PCUR.R
+# File: 2.2-load-PCUR.R
 # !NOTE: edgeR needs to be installed
 # First include path variable to the data and mirLookup table, i.e.:
 # PCUR_data_path <- ".../Data"
