@@ -1,4 +1,4 @@
-# File: 5a-obtain-group-weights-PRAD.R
+# File: 5a-obtain-group-weights-PRAD-mirs.R
 # Requires
 # - PRAD: data list
 #      ($nvars): number of variables to select (otherwise 5)
@@ -26,7 +26,7 @@ if(is.null(PRAD$nvars)) PRAD$nvars <- 5
 capture.output(grro <- grridge(highdimdata=PRAD$mirDat, 
                                response=as.factor(!PRAD$ctrlIndex), 
                                partitions=parts, 
-                               optl=PRAD$optl,
+                               optl=PRAD$mir_optl,
                                monotone=c(TRUE, FALSE),
                                innfold=5,
                                compareEN=TRUE,
