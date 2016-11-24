@@ -62,7 +62,7 @@ legtext <- paste(c("Ridge (no selection), ", "Elastic Net (5 variables), ", "Las
                  ", Sens: ",
                  round(c(sens.ridge, sens.EN, sens.lasso, sens.GREN), 3),
                  sep="")
-legend("bottomright", cex=0.7, lty=1,
+legend("bottomright", cex=0.8, lty=1,
        legend=legtext,
        col=cols[c("ridge", "EN", "lasso", "GREN")],
        title="AUC, Sensitivity at specificity=0.9")
