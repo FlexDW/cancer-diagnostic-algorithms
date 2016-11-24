@@ -1,6 +1,6 @@
 # File: 8.2a-compare-norm-strategies-PCBL.R
 # Requires
-# - PCBL: data list with grro object loaded (for selected variables)
+# - PCBL: data list with mir_grro1 object loaded (for selected variables)
 # - packages: glmnet, GRridge
 # - functions: %+%, getCvSets, cv.predict, whichSel, sensitivity
 # Saves:
@@ -11,7 +11,7 @@ Y <- as.numeric(!PCBL$ctrlIndex)
 cv_sets <- getCvSets(y=Y, nsets=3, seed=cvSeed, print=FALSE)
 
 # selected variables
-vars <- PCBL$grro1$resEN$whichEN
+vars <- PCBL$mir_grro1$resEN$whichEN
 
 # normalized model
 p_normed <- cv.predict(x=t(PCBL$mirDat[vars,]), y=Y, lambda=NULL, alpha=0, foldid=cv_sets)
