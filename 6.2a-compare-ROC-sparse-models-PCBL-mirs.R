@@ -55,7 +55,7 @@ roc.GREN <- t(GRridge::roc(probs=p.GREN, true=Y, cutoffs=seq(1, 0, length=201)))
 sens.GREN <- sensitivity(p=p.GREN, y=Y, specificity=0.9)
 
 # create plot (all vars)
-png(filename="Diagrams/compare_ROC_PCBL.png", width=800, height=400)
+png(filename="Diagrams/compare_ROC_PCBL_mir.png", width=800, height=400)
 par(mfrow=c(1, 2))
 plot(roc.ridge, type='l', col=cols["ridge"], 
      main="ROC comparison, blood data (all variables)")
@@ -66,7 +66,7 @@ legtext <- paste(c("Ridge, ", "Group-regularized Ridge, "),
                  ", Sens: ",
                  round(c(sens.ridge, sens.GRR), 3),
                  sep="")
-legend("bottomright", cex=0.7, lty=1,
+legend("bottomright", cex=0.8, lty=1,
        legend=legtext,
        col=cols[c("ridge", "GRR")],
        title="AUC, Sensitivity at specificity=0.9")
@@ -82,7 +82,7 @@ legtext <- paste(c("Elastic Net, ", "Lasso, ", "Group Reg. EN, "),
                  ", Sens: ",
                  round(c(sens.EN, sens.lasso, sens.GREN), 3),
                  sep="")
-legend("bottomright", cex=0.7, lty=1,
+legend("bottomright", cex=0.8, lty=1,
        legend=legtext,
        col=cols[c("EN", "lasso", "GREN")],
        title="AUC, Sensitivity at specificity=0.9")
@@ -95,7 +95,7 @@ auc.GREN2 <- glmnet::auc(prob=p.GREN2, y=Y)
 roc.GREN2 <- t(GRridge::roc(probs=p.GREN2, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.GREN2 <- sensitivity(p=p.GREN2, y=Y, specificity=0.9)
 
-png(filename="Diagrams/compare_ROC_PCBL_tissue_beta_groups.png", width=400, height=400)
+png(filename="Diagrams/compare_ROC_PCBL_mir_tissue_beta_groups.png", width=400, height=400)
 plot(roc.GREN, type='l', col=cols["GREN"], 
      main="Group Reg. with/without tissue betas (Variables: "%+%nvars.PCBL%+%")")
 points(roc.GREN2, type='l', col=cols["GREN2"])
