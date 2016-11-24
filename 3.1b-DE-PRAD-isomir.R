@@ -3,10 +3,12 @@
 # - PRAD: data list
 
 # plot distribution of library size 
+png(filename="Diagrams/Library_size_comparison_PRAD_iso.png", width=800, height=400) 
 par(mfrow=c(1, 2))
-hist(PRAD$isoLibSize[PRAD$ctrlIndex], xlim=c(0, 2e7), cex.main=0.7, xlab="", breaks=11, main="Isoform Library Size - Control Sample")
-hist(PRAD$isoLibSize[!PRAD$ctrlIndex], xlim=c(0, 2e7), cex.main=0.7, xlab="", breaks=11, main="Isoform Library Size - Tumor Sample")
+hist(PRAD$isoLibSize[PRAD$ctrlIndex], xlim=c(0, 2e7), cex.main=0.9, xlab="", breaks=11, main="Isoform Library Size - Control Sample")
+hist(PRAD$isoLibSize[!PRAD$ctrlIndex], xlim=c(0, 2e7), cex.main=0.9, xlab="", breaks=11, main="Isoform Library Size - Tumor Sample")
 par(mfrow=c(1, 1))
+dev.off()
 
 # Test whether library size is associated with the factor of interest
 PRAD$iso_wc_pval <- wilcox.test(PRAD$isoLibSize ~ PRAD$ctrlIndex)$p.value
@@ -23,7 +25,7 @@ isoDCRNorm <- edgeR::estimateGLMTagwiseDisp(isoDCRNorm, MM)
 
 # Fit regression-type model
 isoResGLMfitCRNorm <- edgeR::glmFit(isoDCRNorm, MM, dispersion=isoDCRNorm$tagwise.dispersion)
-
+   
 # Perform differential expression testing using the dispersion 
 # IMPORTANT: We are testing coef=2 the control/tumor flag
 isoDENorm <- edgeR::glmLRT(isoResGLMfitCRNorm, coef=2)
@@ -32,7 +34,7 @@ isoDENorm <- edgeR::glmLRT(isoResGLMfitCRNorm, coef=2)
 isoTopNorm <- edgeR::topTags(isoDENorm, n=nrow(isoDENorm))
 
 nIsoSig <- sum(isoTopNorm$table$FDR < 0.1)
-
+   
 png(filename="Diagrams/DE_PRAD_iso.png", width=400, height=400) 
 hist(isoTopNorm$table$FDR, breaks=55,
      main=paste("Differentially Expressed Isoforms (" %+% nIsoSig %+% " at FDR <0.1)"), 
@@ -47,4 +49,4 @@ dev.off()
 # mean(isoTopNorm$table$FDR < 0.1)
 
 rm(isoDGENorm, isoDCRNorm, MM, isoResGLMfitCRNorm, isoDENorm, isoTopNorm, nIsoSig)
-# rm(sigIsomirs, pcMirsInIsomirs)
+# rm(sigIsomirs, pcIsomirsInMirs)
