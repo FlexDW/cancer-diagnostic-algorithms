@@ -50,7 +50,7 @@ sens_3normed <- sensitivity(p=p_3normed, y=Y, specificity=0.9)
 cols <- c("red", "green", "gold", "purple", "darkgrey")
 names(cols) <- c("Unnormalized", "Full set", "1 variable", "2 variables", "3 variables")
 
-png(filename="Diagrams/normalization_ROC_PRAD.png", width=400, height=400)
+png(filename="Diagrams/normalization_ROC_PRAD_mir.png", width=400, height=400)
 plot(roc_unnormed, type='l', col=cols["Unnormalized"], 
      main="ROC - Comparing normalization strategies on tissue data")
 points(roc_normed, type='l', col=cols["Full set"])
