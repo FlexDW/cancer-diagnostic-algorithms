@@ -1,4 +1,4 @@
-# File: 8a-compare-norm-strategies-PRAD.R
+# File: 8.1a-compare-norm-strategies-PRAD.R
 # Requires
 # - PRAD: data list with mir_grro object loaded (for selected variables)
 # - packages: glmnet, GRridge
