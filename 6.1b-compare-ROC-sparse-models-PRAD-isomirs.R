@@ -14,7 +14,7 @@ X <- t(PRAD$isoDat)
 Y <- as.numeric(!PRAD$ctrlIndex)
 
 # create cross-validation sets
-cvSets <- getCvSets(y=Y, nsets=10, seed=cvSeed, print=FALSE)
+cvSets <- getCvSets(y=Y, nsets=5, seed=cvSeed, print=FALSE)
 
 # Set nvars to match Group Regularized EN (sometimes slightly different to target nvars)
 nvars.PRAD <- length(PRAD$iso_grro$resEN$whichEN)
