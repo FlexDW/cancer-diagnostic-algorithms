@@ -1,6 +1,6 @@
 # File: 8a-compare-norm-strategies-PRAD.R
 # Requires
-# - PRAD: data list with grro object loaded (for selected variables)
+# - PRAD: data list with mir_grro object loaded (for selected variables)
 # - packages: glmnet, GRridge
 # - functions: %+%, getCvSets, cv.predict, whichSel, sensitivity
 # Saves:
@@ -11,7 +11,7 @@ Y <- as.numeric(!PRAD$ctrlIndex)
 cv_sets <- getCvSets(y=Y, nsets=10, seed=cvSeed, print=FALSE)
 
 # selected variables
-vars <- PRAD$grro$resEN$whichEN
+vars <- PRAD$mir_grro$resEN$whichEN
 
 # normalized model
 p_normed <- cv.predict(x=t(PRAD$mirDat[vars,]), y=Y, lambda=NULL, alpha=0, foldid=cv_sets)
