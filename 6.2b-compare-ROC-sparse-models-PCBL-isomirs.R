@@ -27,8 +27,8 @@ auc.ridge <- glmnet::auc(prob=p.ridge, y=Y)
 roc.ridge <- t(GRridge::roc(probs=p.ridge, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.ridge <- sensitivity(p=p.ridge, y=Y, specificity=0.9)
 
-# Group regularized Ridge
-p.GRR <- cv.predict(x=cbind(1, PCBL$iso_grro0$XMw0), y=Y, alpha=0, lambda=cvo$lambda.min, foldid=cvSets, standardize=FALSE, intercept=FALSE, penalty.factor=rep(1, ncol(PCBL$iso_grro0$XMw0)))
+# Group regularized Ridge without
+p.GRR <- cv.predict(x=cbind(1, PCBL$iso_grro1$XMw0), y=Y, alpha=0, lambda=cvo$lambda.min, foldid=cvSets, standardize=FALSE, intercept=FALSE, penalty.factor=rep(1, ncol(PCBL$iso_grro0$XMw0)))
 auc.GRR <- glmnet::auc(prob=p.GRR, y=Y)
 roc.GRR <- t(GRridge::roc(probs=p.GRR, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.GRR <- sensitivity(p=p.GRR, y=Y, specificity=0.9)
@@ -88,14 +88,35 @@ legend("bottomright", cex=0.8, lty=1,
        title="AUC, Sensitivity at specificity=0.9")
 dev.off()
 
-# Compare without Tissue Betas
+# Group regularized Ridge without Tissue Betas
+p.GRR2 <- cv.predict(x=cbind(1, PCBL$iso_grro2$XMw0), y=Y, alpha=0, lambda=cvo$lambda.min, foldid=cvSets, standardize=FALSE, intercept=FALSE, penalty.factor=rep(1, ncol(PCBL$iso_grro0$XMw0)))
+auc.GRR2 <- glmnet::auc(prob=p.GRR2, y=Y)
+roc.GRR2 <- t(GRridge::roc(probs=p.GRR2, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
+sens.GRR2 <- sensitivity(p=p.GRR2, y=Y, specificity=0.9)
+
+# Compare GRR without Tissue Betas
 vars.GREN2 <- PCBL$iso_grro2$resEN$whichEN
 p.GREN2 <- cv.predict(x=X[, vars.GREN2], y=Y, alpha=0, lambda=NULL, foldid=cvSets)
 auc.GREN2 <- glmnet::auc(prob=p.GREN2, y=Y)
 roc.GREN2 <- t(GRridge::roc(probs=p.GREN2, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.GREN2 <- sensitivity(p=p.GREN2, y=Y, specificity=0.9)
 
-png(filename="Diagrams/compare_ROC_PCBL_iso_with_without_tissue_beta_groups.png", width=400, height=400)
+png(filename="Diagrams/compare_ROC_PCBL_iso_with_without_tissue_beta_groups.png", width=800, height=400)
+par(mfrow=c(1, 2))
+plot(roc.GRR, type='l', col=cols["GREN"], #lwd=2,
+     main="Group Reg.with/without tissue betas (All Variables)")
+points(roc.GRR2, type='l', col=cols["GREN2"])
+legtext <- paste(c("With tissue betas, ", "Without, "),
+                 "AUC: ",
+                 round(c(auc.GRR, auc.GRR2), 3),
+                 ", Sens: ",
+                 round(c(sens.GRR, sens.GRR2), 3),
+                 sep="")
+legend("bottomright", cex=0.8, lty=1,
+       legend=legtext,
+       col=cols[c("GREN", "GREN2")],
+       title="AUC, Sensitivity at specificity=0.9")
+
 plot(roc.GREN, type='l', col=cols["GREN"], 
      main="Group Reg. with/without tissue betas (Variables: "%+%nvars.PCBL%+%")")
 points(roc.GREN2, type='l', col=cols["GREN2"])
