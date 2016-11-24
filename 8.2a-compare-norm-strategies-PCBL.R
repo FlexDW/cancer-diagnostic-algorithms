@@ -1,4 +1,4 @@
-# File: 8b-compare-norm-strategies-PCBL.R
+# File: 8.2a-compare-norm-strategies-PCBL.R
 # Requires
 # - PCBL: data list with grro object loaded (for selected variables)
 # - packages: glmnet, GRridge
