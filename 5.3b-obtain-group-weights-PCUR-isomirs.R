@@ -21,6 +21,8 @@ beta_parts_iso <- lapply(beta_parts_mirs, function(x){
   which(PCUR$isomirs %in% PCUR$mirLookup$isoform_coords[mir_table_index])
 })
 
+## ONLY 11 OVERLAPPING ISOMIRS FOUND, NOT ENOUGH TO CREATE PARTITIONS ##
+
 # Create partitions list
 parts1 <- parts2 <- list(iso_counts=iso_counts)
 
