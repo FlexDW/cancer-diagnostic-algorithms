@@ -1,0 +1,80 @@
+marginOfError <- function(x, y, B, intercept, spec=1, sens=1, type="euclidean"){
+# A function to calculate the distance between the target specificity and sensitivity. 
+# Args:
+#  - x,  (matrix) the model matrix with rows as samples and columns as features.
+#          NOTE: A column of 1 should be included as the first column of x 
+#                if B includes an intercept.
+#  - y,  the binary response vector 0-control, 1-positive cases [strict] 
+#  - B,  vector of coefficients of the function f(x), the intercept should be 
+#           the first item if included.
+#  - intercept,  length 1 to use same for all models or length(ncol(B)) for different intercepts
+#  - spec,  the target specificity of the classifier [default = 100%]
+#  - sens,  the target sensitivity of the classifier [default = 100%]
+#  - type,  what type of distance should be returned, the options are:
+#     "euclidean"    returns perpendicular euclidean distance to the decision boundary 
+#                        in the scale of the regression variables
+#     "probability"  returns response distance, i.e. the distance between two probability 
+#                        cut-offs in the range [0,1] based on logistic regression
+# 
+# Returns values:
+#  - M,  the margin of error in the scale requested
+
+#   # parameter checks
+#   if(spec < 0 | spec > 1 | sens < 0 | sens > 1){
+#     print("Sensitivity (sens) and Specificity (spec) should be a number between 0 and 1")
+#     return(NULL)
+#   }
+#   if(!is.matrix(x) & !is.data.frame(x)){
+#     print("The argument x must be of type matrix or data.frame")
+#     return(NULL)
+#   }
+#   if(nrow(x) != length(y)){
+#     print("Number of samples (rows) in x not equal to number of responses in y")
+#     return(NULL)
+#   }
+#   if(ncol(x) != length(B)){
+#     print("Number of features in x (columns) not equal to number of coefficients. If intercept included in B, make sure a column of 1s is included in x")
+#     return(NULL)
+#   }
+#   if(type != "euclidean" & type != "probability"){
+#     print("Unknown distance scale, please set to 'euclidean' or 'probability'")
+#     return(NULL)
+#   }
+#   if(!is.logical(intercept)){
+#     print("The argument 'intercept' should be either TRUE or FALSE, indicating whether an intercept was included as the first item in B (and a column of 1s included in x")
+#   }
+#   if(!all(unique(y) %in% c(0,1))){
+#     print("Response vector is not binary, please code as 0-control, 1-positive cases")
+#     return(NULL)
+#   }
+#   if(length(unique(y)) == 1){
+#     print("Response vector has only one class, cannot calculate distance between two classes")
+#     return(NULL)
+#   }
+  
+  # convert y to -1,1
+  Y <- (y * 2) - 1
+  XB <- cbind(1, x) %*% rbind(intercept, B)
+  
+  # calculate the norm of B (excluding the intercept)
+  Bnorm <- sqrt(colSums(B^2))
+
+  # determine number of errors tolerated in case and controls
+  controlErrs <- floor(sum(Y == 1) * (1 - spec))
+  caseErrs <- floor(sum(Y == -1) * (1 - sens))
+  
+  # calculate the margin from each point to the correct side of decision boundary
+  if(type == "euclidean"){
+    dist <- sweep(sweep(XB, 1, Y, "*", check.margin=FALSE), # Y*XB 
+                  2, Bnorm, "/", check.margin=FALSE) # Y*XB / Bnorm
+    M <- apply(dist, 2, function(A) sort(A[Y == -1])[controlErrs + 1] +
+                                     sort(A[Y ==  1])[caseErrs + 1])
+  }else if(type == "probability"){
+    probs <- exp(XB)/(1 + exp(XB))
+    M <- apply(probs, 2, function(A) sort(A[Y == 1])[caseErrs + 1] - 
+                                      sort(A[Y == -1], decreasing=T)[controlErrs + 1])
+  }
+
+  # return distance
+  return(M)
+}
