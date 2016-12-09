@@ -2,6 +2,10 @@ cv.predict <- function(x, y, alpha, lambda, foldid, family="binomial", penalty.f
   
   if(is.null(lambda)){
     cvo <- cv.glmnet(x=x, y=y, alpha=0, family="binomial", foldid=foldid, penalty.factor=penalty.factor, standardize=standardize, intercept=intercept)
+    while(cvo$lambda.min == rev(cvo$lambda)[1]){ # while optimal lambda lower than range
+      lambdas <- cvo$lambda/(cvo$lambda[1]/rev(cvo$lambda)[1])
+      cvo <- cv.glmnet(x=x, y=y, alpha=0, family="binomial", lambda=lambdas, foldid=foldid, penalty.factor=penalty.factor, standardize=standardize, intercept=intercept)
+    }
     lambda <- cvo$lambda.min
   }
   
