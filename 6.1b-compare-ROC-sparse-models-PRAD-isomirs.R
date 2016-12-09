@@ -21,6 +21,10 @@ nvars.PRAD <- length(PRAD$iso_grro$resEN$whichEN)
 
 # Get glmnet formulated optimal lambda
 cvo <- cv.glmnet(x=X, y=Y, alpha=0, family="binomial", foldid=cvSets)
+while(cvo$lambda.min == rev(cvo$lambda)[1]){ # while optimal lambda lower than range
+  lambdas <- cvo$lambda/(cvo$lambda[1]/rev(cvo$lambda)[1])
+  cvo <- cv.glmnet(x=X, y=Y, alpha=0, family="binomial", foldid=cvSets, lambda=lambdas)
+}
 
 # Ridge
 p.ridge <- cv.predict(x=X, y=Y, alpha=0, lambda=cvo$lambda.min, foldid=cvSets)
