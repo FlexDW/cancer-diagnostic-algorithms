@@ -2,6 +2,10 @@ whichSel <- function(x, y, nvars, foldid, alpha=NULL, lambda=NULL, len=1000, max
   if(is.null(alpha)){
     if(is.null(lambda)){
       cvo <- cv.glmnet(x, y, alpha=0, nlambda=600, standardize=FALSE, family=family, foldid=foldid, weights=w, penalty.factor=pf, intercept=intercept)
+      while(cvo$lambda.min == rev(cvo$lambda)[1]){ # while optimal lambda lower than range
+        lambdas <- cvo$lambda/(cvo$lambda[1]/rev(cvo$lambda)[1])
+        cvo <- cv.glmnet(x, y, alpha=0, lambda=lambdas, standardize=FALSE, family=family, foldid=foldid, weights=w, penalty.factor=pf, intercept=intercept)
+      }      
       lambda <- cvo$lambda.min
     }
     
