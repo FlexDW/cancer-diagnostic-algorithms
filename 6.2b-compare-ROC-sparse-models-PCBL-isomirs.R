@@ -17,6 +17,10 @@ cvSets <- getCvSets(y=Y, nsets=5, seed=cvSeed, print=FALSE)
 
 # Get glmnet formulated optimal L2 
 cvo <- cv.glmnet(x=X, y=Y, alpha=0, family="binomial", foldid=cvSets)
+while(cvo$lambda.min == rev(cvo$lambda)[1]){ # while optimal lambda lower than range
+  lambdas <- cvo$lambda/(cvo$lambda[1]/rev(cvo$lambda)[1])
+  cvo <- cv.glmnet(x=X, y=Y, alpha=0, family="binomial", foldid=cvSets, lambda=lambdas)
+}
 
 # Set nvars to match Group Regularized EN (sometimes slightly different to target nvars)
 nvars.PCBL <- length(PCBL$iso_grro1$resEN$whichEN)
