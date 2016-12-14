@@ -46,7 +46,7 @@ sens.EN <- sensitivity(p=p.EN, y=Y, specificity=0.9)
 
 # Lasso
 vars.lasso <- whichSel(x=X, y=Y, nvars=nvars.PCUR, alpha=1, lambda=NULL)
-p.lasso <- cv.predict(x=X[, vars.lasso], y=Y, alpha=1, lambda=NULL, foldid=cvSets)
+p.lasso <- cv.predict(x=X[, vars.lasso], y=Y, alpha=1, lambda=0, foldid=cvSets) # lambda found to be 0 but takes long time in processing
 auc.lasso <- glmnet::auc(prob=p.lasso, y=Y)
 roc.lasso <- t(GRridge::roc(probs=p.lasso, true=Y, cutoffs=seq(1, 0, length=201)))[, 1:2]
 sens.lasso <- sensitivity(p=p.lasso, y=Y, specificity=0.9)
@@ -60,19 +60,18 @@ sens.GREN <- sensitivity(p=p.GREN, y=Y, specificity=0.9)
 
 # create plot (all vars)
 png(filename="Diagrams/compare_ROC_PCUR_iso.png", width=400, height=400)
-plot(roc.ridge, type='l', col=cols["ridge"], lwd=3,
+plot(roc.ridge, type='l', col=cols["ridge"], lwd=2,
      main="ROC comparison, urine data",
-     xlab="FPR (1 - specificity)", ylab="Sensitivity")
-points(roc.GRR, type='l', col=cols["GRR"])
-points(roc.EN, type='l', col=cols["EN"], lwd=2)
-points(roc.GREN, type='l', col=cols["GREN"], lwd=1)
-legtext <- paste(c("Ridge (all), ", "Group-regularized Ridge (all), ", "Elastic Net (5 vars), ", "Group Reg. EN (5 vars), "),
+     xlab="FPR", ylab="TPR")
+points(roc.EN, type='l', col=cols["EN"], lwd=1)
+points(roc.lasso, type='l', col=cols["lasso"], lwd=1)
+legtext <- paste(c("Ridge (all), ", "Elastic Net (5 vars), ", "Lasso (5 vars), "),
                  "AUC: ",
-                 round(c(auc.ridge, auc.GRR, auc.EN, auc.GREN), 3),
+                 round(c(auc.ridge, auc.EN, auc.lasso), 3),
                  sep="")
 legend("bottomright", cex=0.7, lty=1,
        legend=legtext,
-       col=cols[c("ridge", "GRR", "EN", "GREN")],
+       col=cols[c("ridge", "EN", "lasso")],
        title="AUC")
 dev.off()
 
