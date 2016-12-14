@@ -37,5 +37,6 @@ cv.predict <- function(x, y, alpha, lambda, foldid=NULL, family="binomial", pena
       p[test] <- predict(glmo, newx=x[test, , drop=FALSE], type="response")
     }
   }
+  p <- p * (0.5 / median(p))
   return(p)
 }
