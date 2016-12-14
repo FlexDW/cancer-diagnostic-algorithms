@@ -43,13 +43,20 @@ whichSel <- function(x, y, nvars, foldid, alpha=NULL, lambda=NULL, len=1000, max
     count <- 0
     glmo <- glmnet(x=x, y=y, alpha=alpha, lambda=lambda, standardize=FALSE, family=family, weights=w, penalty.factor=pf, intercept=intercept)
     glmo_nvars <- colSums(as.matrix(glmo$beta) > 0)
+    while(all(glmo_nvars < nvars)){
+      lambda_max <- min(glmo$lambda)
+      lambda_min <- lambda_max/100
+      lambda <- seq(lambda_min, lambda_max, length=len)
+      glmo <- glmnet(x=x, y=y, alpha=alpha, lambda=lambda, standardize=FALSE, family=family, weights=w, penalty.factor=pf, intercept=intercept)
+      glmo_nvars <- colSums(as.matrix(glmo$beta) > 0)
+    }
     target_lambdas <- which(glmo_nvars == nvars)
     if(length(target_lambdas) > 0){
       success <- TRUE
       betas <- glmo$beta[, max(target_lambdas)]
     } else {
       lambda_max <- glmo$lambda[max(which(glmo_nvars < nvars))]
-      lambda_min <- glmo$lambda[max(which(glmo_nvars > nvars))]
+      lambda_min <- glmo$lambda[max(which(glmo_nvars > nvars))]  
       lambda <- seq(lambda_min, lambda_max, length=len)
       lower <- 1
       upper <- length(lambda)    
