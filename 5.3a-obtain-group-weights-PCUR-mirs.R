@@ -1,3 +1,5 @@
+### NEEDS UPDATING TO LOO CV ###
+
 # Requires
 # - PCUR: data list
 #      ($nvars): number of variables to select (otherwise 5)
