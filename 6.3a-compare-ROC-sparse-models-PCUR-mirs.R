@@ -1,3 +1,5 @@
+### NEEDS UPDATING TO LOO CV ###
+
 # Requires
 # - PCUR: data list with mir_grro1 and mir_grro2 objects loaded
 # - packages: glmnet, GRridge
