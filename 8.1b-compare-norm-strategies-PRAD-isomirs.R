@@ -52,12 +52,12 @@ names(cols) <- c("Unnormalized", "Full set", "1 variable", "2 variables", "3 var
 
 png(filename="Diagrams/normalization_ROC_PRAD_isomirs.png", width=400, height=400)
 plot(roc_unnormed, type='l', col=cols["Unnormalized"], 
-     main="ROC - Comparing normalization strategies on tissue data")
+     main="Normalization strategies on tissue data")
 points(roc_normed, type='l', col=cols["Full set"])
 points(roc_1normed, type='l', col=cols["1 variable"])
 points(roc_2normed, type='l', col=cols["2 variables"])
 points(roc_3normed, type='l', col=cols["3 variables"])
-legtext <- paste(c("Unnormalized, ", "Full set, ", "1 variable, ", "2 variables, ", "3 variables, "),
+legtext <- paste(c("Unnormalized, ", "Full set (TMM), ", "1 variable, ", "2 variables, ", "3 variables, "),
                  "AUC: ",
                  round(c(auc_unnormed, auc_normed, auc_1normed, auc_2normed, auc_3normed), 3),
                  ", Sens: ",
