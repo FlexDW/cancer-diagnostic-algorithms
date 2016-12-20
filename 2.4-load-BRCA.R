@@ -88,4 +88,46 @@ BRCA <- list(isoDat=isoDat,
              mirRelLibSize=mirRelLibSize, 
              mirNF=mirNF)
 
+splits <- getCvSets(y=!BRCA$ctrlIndex, nsets=2, seed=cvSeed)
+train_index <- splits == 1
+test_index <- splits == 2
+
+BRCA_train <- list(isoDat=isoDat[, train_index], 
+               mirLookup=mirLookup, 
+               isomirs=isomirs, 
+               barcodes=barcodes[train_index], 
+               mirs=mirs, 
+               mirDat=mirDat[, train_index], 
+               PID=PID[train_index], 
+               ctrlIndex=ctrlIndex[train_index], 
+               ctrlPID=PID[ctrlIndex][train_index[ctrlIndex]], 
+               tmrPID=PID[!ctrlIndex][train_index[!ctrlIndex]], 
+               isoRaw=isoRaw[, train_index], 
+               mirRaw=mirRaw[, train_index], 
+               isoLibSize=isoLibSize[train_index], 
+               isoRelLibSize=isoRelLibSize[train_index], 
+               isoNF=isoNF[train_index], 
+               mirLibSize=mirLibSize[train_index], 
+               mirRelLibSize=mirRelLibSize[train_index], 
+               mirNF=mirNF[train_index])
+
+BRCA_test <- list(isoDat=isoDat[, test_index], 
+                   mirLookup=mirLookup, 
+                   isomirs=isomirs, 
+                   barcodes=barcodes[test_index], 
+                   mirs=mirs, 
+                   mirDat=mirDat[, test_index], 
+                   PID=PID[test_index], 
+                   ctrlIndex=ctrlIndex[test_index], 
+                   ctrlPID=PID[ctrlIndex][test_index[ctrlIndex]], 
+                   tmrPID=PID[!ctrlIndex][test_index[!ctrlIndex]], 
+                   isoRaw=isoRaw[, test_index], 
+                   mirRaw=mirRaw[, test_index], 
+                   isoLibSize=isoLibSize[test_index], 
+                   isoRelLibSize=isoRelLibSize[test_index], 
+                   isoNF=isoNF[test_index], 
+                   mirLibSize=mirLibSize[test_index], 
+                   mirRelLibSize=mirRelLibSize[test_index], 
+                   mirNF=mirNF[test_index])
+
 rm(idx, splitIsoDat, setIndex, mirIndex, isomirIndex, g, isoDat, mirLookup, isomirs, barcodes, mirs, mirDat, PID, ctrlIndex, ctrlPID, tmrPID, isoRaw, mirRaw, isoLibSize, isoRelLibSize, isoNF, mirLibSize, mirRelLibSize, mirNF)
