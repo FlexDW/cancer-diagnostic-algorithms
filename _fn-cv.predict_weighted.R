@@ -1,0 +1,42 @@
+cv.predict <- function(x, y, alpha, lambda, foldid=NULL, family="binomial", penalty.factor = rep(1, ncol(x)), weights=rep(1, nrow(x)), standardize=TRUE, intercept=TRUE){
+  
+  if(!is.null(foldid)){
+    if(is.null(lambda)){
+      cvo <- cv.glmnet(x=x, y=y, alpha=0, family="binomial", foldid=foldid, penalty.factor=penalty.factor, weights=weights, standardize=standardize, intercept=intercept)
+      while(cvo$lambda.min == rev(cvo$lambda)[1]){ # while optimal lambda lower than range
+        lambdas <- cvo$lambda/(cvo$lambda[1]/rev(cvo$lambda)[1])
+        cvo <- cv.glmnet(x=x, y=y, alpha=0, family="binomial", lambda=lambdas, foldid=foldid, penalty.factor=penalty.factor, weights=weights, standardize=standardize, intercept=intercept)
+      }
+      lambda <- cvo$lambda.min
+    }
+    
+    p <- numeric(length(y))
+    for(i in sort(unique(foldid))){
+      train <- foldid != i
+      test <- foldid == i
+      glmo <- glmnet(x=x[train, ], y=y[train], alpha=alpha, lambda=lambda, family=family, penalty.factor=penalty.factor, weights=weights[train], standardize=standardize, intercept=intercept)
+      p[test] <- predict(glmo, newx=x[test, ], type="response")
+    }
+  }else{
+    print("Defaulting to Leave-one-out CV")
+    if(is.null(lambda)){
+      cvo <- cv.glmnet(x=x, y=y, alpha=0, family="binomial", nfolds=length(y), penalty.factor=penalty.factor, weights=weights, standardize=standardize, intercept=intercept)
+      while(cvo$lambda.min == rev(cvo$lambda)[1]){ # while optimal lambda lower than range
+        lambdas <- cvo$lambda/(cvo$lambda[1]/rev(cvo$lambda)[1])
+        cvo <- cv.glmnet(x=x, y=y, alpha=0, family="binomial", lambda=lambdas, nfolds=length(y), penalty.factor=penalty.factor, weights=weights, standardize=standardize, intercept=intercept)
+      }
+      lambda <- cvo$lambda.min
+    }
+    
+    p <- numeric(length(y))
+    foldid <- 1:length(y)
+    for(i in sort(unique(foldid))){
+      train <- foldid != i
+      test <- foldid == i
+      glmo <- glmnet(x=x[train, ], y=y[train], alpha=alpha, lambda=lambda, family=family, penalty.factor=penalty.factor, weights=weights[train], standardize=standardize, intercept=intercept)
+      p[test] <- predict(glmo, newx=x[test, , drop=FALSE], type="response")
+    }
+  }
+  p <- p * (0.5 / median(p))
+  return(p)
+}
