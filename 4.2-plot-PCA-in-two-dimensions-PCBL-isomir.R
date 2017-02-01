@@ -1,4 +1,6 @@
+# File: 4.2-plot-PCA-in-two-dimensions-PCBL-isomir.R
 
+# transpose so that columns=features
 # HAD TO USE MIRS SINCE COULD NOT ALLOCATE 
 X <- t(PCBL$mirDat)
 
