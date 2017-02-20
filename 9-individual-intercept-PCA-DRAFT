@@ -1,0 +1,131 @@
+# File: 9.4b-plot-PCA-in-two-dimensions-PRAD-isomir.R
+
+BRCA_data_path <- "C:/NotBackedUp/University/Leiden/Thesis/Tumour classification/Data/BRCA - miRNA"
+isoDat <- read.table(paste(BRCA_data_path, "BRCA_HiSeq_counts_transp.txt", sep="/"), header=TRUE, row.names=1)
+
+PRAD_data_path <- "C:/NotBackedUp/University/Leiden/Thesis/Tumour classification/Data/Urine Pan Cancer"
+isoDat <- read.table(paste(PRAD_data_path, "PRAD_counts_transp.txt", sep="/"), header=TRUE, row.names=1)
+
+# obtain labels from data set
+isomirs <- rownames(isoDat)
+barcodes <- colnames(isoDat)
+
+# extract patientID and control group flag from barcodes
+PID <- substr(barcodes, 1, 12) # Currently, uniqe patientID is first 12 characters of barcode
+ctrlIndex <- substr(barcodes, 14, 14) == "1" # Currently this is where the control flag is in TCGA barcodes
+
+# Define control and tumor sets
+# (most patients are in both groups so we define based on a matched control sample existing)
+ctrlPID <- unique(PID[ctrlIndex])
+tmrPID <- unique(PID[!ctrlIndex])
+
+# Remove samples without a matching tumor or control
+setIndex <- (PID %in% ctrlPID) & (PID %in% tmrPID)
+setIndex[setIndex & ctrlIndex] <- rev(!duplicated(rev(PID[setIndex & ctrlIndex])))
+setIndex[setIndex & !ctrlIndex] <- rev(!duplicated(rev(PID[setIndex & !ctrlIndex])))
+isoDat <- isoDat[, setIndex]
+barcodes <- barcodes[setIndex]
+PID <- PID[setIndex]
+ctrlIndex <- ctrlIndex[setIndex]
+
+# Select subset of data s.t. non-zero samples > 10% (unlikely to be important if less)
+isomirIndex <- apply(isoDat, 1, function(x) mean(x > 0)) > 0.1
+isoDat <- isoDat[isomirIndex, ]
+isomirs <- isomirs[isomirIndex]
+
+# normalize
+isoLibSize <- colSums(isoDat)
+isoRelLibSize <- isoLibSize/exp(mean(log(isoLibSize)))
+isoNF <- edgeR::calcNormFactors(isoDat)*isoRelLibSize 
+isoDat <- round(sweep(isoDat, 2, isoNF, "/"))
+
+# transform data
+g=function(x) sqrt(x + 3/8) - sqrt(3/8)
+isoDat <- g(isoDat)
+
+# standardize
+isoDat <- t(scale(t(isoDat)))
+
+# transpose so that columns=features
+X <- t(isoDat)
+
+#### PCA on isomirs ####
+evd <- eigen(cov(X), symmetric=TRUE) 
+components <- t(t(evd$vectors) %*% t(X))
+pc <- components[, 1:2] # first two for plotting
+
+#save(X, evd, components, pc, file='C:/Users/felixw/Desktop/PRAD_PCA_doubled.Rdata')
+#load('BRCA_PCA_doubled.Rdata')
+#load('PRAD_PCA_doubled.Rdata')
+
+# obtain variance accounted for
+total_var <- diag(cov(components))
+VAF1 <- round(total_var[1] / sum(total_var), 2)
+VAF2 <- round(total_var[2] / sum(total_var), 2)
+
+# normalise principal components
+pc <- scale(pc)
+
+#### Plot PCAs ####
+png(filename="Diagrams/PCA-in-two-dimensions-PRAD-isomir-subset.png", width=400, height=400) 
+plot(pc, #cex.main=0.8, cex.lab=0.7,
+     xlab=paste("PC1 (VAF=", VAF1, ")", sep=""), 
+     ylab=paste("PC2 (VAF=", VAF2, ")", sep=""), 
+     col=(as.numeric(!ctrlIndex)+1), # red=tumor, black=healthy
+     pch=c(1, 3)[as.numeric(!ctrlIndex)+1],
+     main="Principal Components Analysis, tissue data subset")
+legend("bottomright", legend=c("Tumor", "Healthy"), 
+       pch=c(3, 1), col=c("red", "black"), cex=0.9)
+y <- as.numeric(!ctrlIndex)
+glmo <- glmnet(y=as.numeric(!ctrlIndex), x=pc, alpha=1, lambda=0, family='binomial')
+char <- as.numeric(predict(glmo, pc, type='class'))
+line <- coef(glmo)[1:2]/-coef(glmo)[3]
+abline(line, col="purple", lty=2, lwd=2)
+dev.off()
+
+
+points(pc, #cex.main=0.8, cex.lab=0.7,
+     xlab=paste("PC1 (VAF=", VAF1, ")", sep=""), 
+     ylab=paste("PC2 (VAF=", VAF2, ")", sep=""), 
+     col=char, # red=tumor, black=healthy
+     pch=char,
+     main="Principal Components Analysis, tissue dataset")
+
+misclassified <- y != char
+misclassified_PID <- unique(PID[misclassified])
+misclassified_index <- PID %in% misclassified_PID
+
+setwd("C:/NotBackedUp/University/Leiden/Thesis/Tumour classification/Writing/Final Report")
+png(filename="Diagrams/within-individual-comparison-of-misclassified-samples.png", width=400, height=400) 
+plot(pc, 
+     xlab=paste("PC1 (VAF=", VAF1, ")", sep=""), 
+     ylab=paste("PC2 (VAF=", VAF2, ")", sep=""), 
+     col='grey',
+     pch=c(1, 3)[y + 1],
+     main="Within individual comparison, misclassified examples")
+
+abline(line, col="purple", lty=2, lwd=2)
+
+colors <- 1:length(misclassified_PID)
+
+points(pc[misclassified_index & ctrlIndex,], 
+       col=colors,
+       pch=20, lwd=1)
+
+points(pc[misclassified_index & !ctrlIndex,], 
+       col=colors,
+       pch=3,
+       lwd=1)
+
+i <- 1
+for(i in 1:length(misclassified_PID)){
+  lines(rbind(pc[misclassified_index & ctrlIndex,][i, ],
+              pc[misclassified_index & !ctrlIndex,][i, ]),
+        col=colors[i],
+        lwd=1.5)
+}
+dev.off()
+
+sqrt(sum(line^2))
+# remove variables
+rm(..., X, evd, components, pc, total_var, VAF1, VAF2)
