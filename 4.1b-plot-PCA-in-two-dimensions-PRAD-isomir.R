@@ -23,7 +23,7 @@ plot(pc, #cex.main=0.8, cex.lab=0.7,
      ylab=paste("PC2 (VAF=", VAF2, ")", sep=""), 
      col=(as.numeric(!PRAD$ctrlIndex)+1), # red=tumor, black=healthy
      pch=20,
-     main="Principal Components Analysis, tissue dataset")
+     main="PCA - Isoforms, tissue dataset")
 legend("topright", legend=c("Tumor", "Healthy"), 
        pch=20, col=c("red", "black"), cex=0.9)
 dev.off()
