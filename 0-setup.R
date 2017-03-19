@@ -1,5 +1,6 @@
 # Loads all packages and functions and creates folders
 # packages
+require(knitr)
 require(pander)
 require(glmnet)
 require(MASS)
