@@ -9,6 +9,9 @@ require(doParallel)
 require(foreach)
 require(edgeR)
 
+# setting cross-validation seed value for repeatability
+cvSeed <- 101016
+
 # package overwrites
 source("https://raw.githubusercontent.com/FlexDW/cancer-diagnostic-algorithms/master/_fn-grridge-update.R")
 
