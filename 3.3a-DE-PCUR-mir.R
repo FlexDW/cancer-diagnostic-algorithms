@@ -43,4 +43,4 @@ hist(mirTopNorm$table$FDR, breaks=55,
 abline(v=0.1, lty=2, lwd=0.5)
 dev.off()
 
-rm(isoDGENorm, isoDCRNorm, MM, isoResGLMfitCRNorm, isoDENorm, isoTopNorm, nIsoSig)
+rm(mirDGENorm, mirDCRNorm, MM, mirResGLMfitCRNorm, mirDENorm, mirTopNorm, nMirSig)
