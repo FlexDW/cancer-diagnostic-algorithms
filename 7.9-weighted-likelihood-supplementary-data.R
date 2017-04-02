@@ -78,41 +78,36 @@ dev.off()
 weight_vec <- abs(1 - mir_results$weight[10] - Y)
 p.ridge <- cv.predict(x=X, y=Y, alpha=0, lambda=mir_results$lambda[10], weights=weight_vec, foldid=cv_sets)
 auc.ridge <- glmnet::auc(prob=p.ridge, y=Y)
-roc.ridge <- t(GRridge::roc(probs=p.ridge, true=Y, cutoffs=seq(1, 0, length=1001)))[, 1:2]
+roc.ridge <- t(GRridge::roc(probs=p.ridge, true=Y, cutoffs=seq(1, 0, length=2001)))[, 1:2]
 sens.ridge <- sensitivity(p=p.ridge, y=Y, specificity=0.80)
 roc.ridge <- rbind(c(0,0), c(0, roc.ridge[1, 2]), roc.ridge)
 
 weight_vec <- abs(1 - mir_results$weight[19] - Y)
 p.w_ridge <- cv.predict(x=X, y=Y, alpha=0, lambda=mir_results$lambda[19], weights=weight_vec, foldid=cv_sets)
 auc.w_ridge <- glmnet::auc(prob=p.w_ridge, y=Y)
-roc.w_ridge <- t(GRridge::roc(probs=p.w_ridge, true=Y, cutoffs=seq(1, 0, length=1001)))[, 1:2]
+roc.w_ridge <- t(GRridge::roc(probs=p.w_ridge, true=Y, cutoffs=seq(1, 0, length=2001)))[, 1:2]
 sens.w_ridge <- sensitivity(p=p.w_ridge, y=Y, specificity=0.80)
-roc.w_ridge <- rbind(c(0,0), c(0, roc.w_ridge[1, 2]), roc.w_ridge)
 
 weight_vec <- abs(1 - mir_results$weight[10] - Y)
 vars.EN <- whichSel(x=X, y=Y, nvars=10, w=weight_vec, lambda=mir_results$lambda[10], pf=c(0, rep(1, ncol(X) - 1)), intercept=FALSE)
 p.EN <- cv.predict(x=X[,vars.EN], y=Y, alpha=0, lambda=NULL, foldid=cv_sets)
 auc.EN <- glmnet::auc(prob=p.EN, y=Y)
-roc.EN <- t(GRridge::roc(probs=p.EN, true=Y, cutoffs=seq(1, 0, length=1001)))[, 1:2]
+roc.EN <- t(GRridge::roc(probs=p.EN, true=Y, cutoffs=seq(1, 0, length=2001)))[, 1:2]
 sens.EN <- sensitivity(p=p.EN, y=Y, specificity=0.80)
-roc.EN <- rbind(c(0,0), c(0, roc.EN[1, 2]), roc.EN)
 
 weight_vec <- abs(1 - mir_results$weight[14] - Y)
 vars.w_EN <- whichSel(x=X, y=Y, nvars=10, w=weight_vec, lambda=mir_results$lambda[14], pf=c(0, rep(1, ncol(X) - 1)), intercept=FALSE)
 p.w_EN <- cv.predict(x=X[,vars.w_EN], y=Y, alpha=0, lambda=NULL, foldid=cv_sets)
 auc.w_EN <- glmnet::auc(prob=p.w_EN, y=Y)
-roc.w_EN <- t(GRridge::roc(probs=p.w_EN, true=Y, cutoffs=seq(1, 0, length=1001)))[, 1:2]
+roc.w_EN <- t(GRridge::roc(probs=p.w_EN, true=Y, cutoffs=seq(1, 0, length=2001)))[, 1:2]
 sens.w_EN <- sensitivity(p=p.w_EN, y=Y, specificity=0.80)
-roc.w_EN <- rbind(c(0,0), c(0, roc.w_EN[1, 2]), roc.w_EN)
 
 weight_vec <- abs(1 - mir_results$weight[19] - Y)
 vars.w_EN_2 <- whichSel(x=X, y=Y, nvars=10, w=weight_vec, lambda=mir_results$lambda[19], pf=c(0, rep(1, ncol(X) - 1)), intercept=FALSE)
 p.w_EN_2 <- cv.predict(x=X[,vars.w_EN_2], y=Y, alpha=0, lambda=NULL, foldid=cv_sets)
 auc.w_EN_2 <- glmnet::auc(prob=p.w_EN_2, y=Y)
-roc.w_EN_2 <- t(GRridge::roc(probs=p.w_EN_2, true=Y, cutoffs=seq(1, 0, length=1001)))[, 1:2]
-sens.w_EN_2 <- sensitivity(p=p.w_EN_2, y=Y, specificity=0.80)
-roc.w_EN_2 <- rbind(c(0,0), c(0, roc.w_EN_2[1, 2]), roc.w_EN_2)
-
+roc.w_EN_2 <- t(GRridge::roc(probs=p.w_EN_2, true=Y, cutoffs=seq(1, 0, length=2001)))[, 1:2]
+sens.w_EN_2 <- sensitivity(p=p.w_EN_2, y=Y, specificity=0.90)
 
 cols <- c("darkblue", "cyan", "darkgreen", "green")
 names(cols) <- c("EN", "w_EN_2", "ridge", "w_ridge")
